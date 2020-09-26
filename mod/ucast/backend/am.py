@@ -16,5 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
+import shutil
+
 class AM:
-    pass
+    def __init__(self, path=None):
+        if path is None:
+            path = shutil.which('am')
+        if path is None:
+            raise OSError('Executable of `am` Atmospheric Model not found.')
+
+        self.am = path
