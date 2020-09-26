@@ -1,0 +1,9 @@
+*
+!*/
+
+!*.*py
+!*file
+!*.y*ml
+
+!*.ipynb
+.ipynb_checkpoints/
