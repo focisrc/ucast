@@ -19,7 +19,8 @@
 import click
 
 @click.command()
-def ucast():
+@click.option('--backend', default='am', help='atmospherical model backend')
+def ucast(backend):
     print('µcast')
 
 if __name__ == '__main__':
