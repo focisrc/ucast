@@ -17,6 +17,7 @@
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
 import shutil
+import subprocess
 
 class AM:
     def __init__(self, path=None):
@@ -26,3 +27,6 @@ class AM:
             raise OSError('Executable of `am` Atmospheric Model not found.')
 
         self.am = path
+
+    def run(self, *args, **kwargs):
+        subprocess.run([self.am, *args], **kwargs)
