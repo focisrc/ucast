@@ -36,6 +36,7 @@ setup(
     },
     python_requires='>=3.6', # `ucast` uses python3's f-string and typing
     install_requires=[
+        'click>=7.1',
         'matplotlib>=3.2',
         'numpy>=1.19',
     ],

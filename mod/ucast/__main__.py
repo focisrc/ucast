@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
+import click
+
+@click.command()
 def ucast():
     print('µcast')
 
