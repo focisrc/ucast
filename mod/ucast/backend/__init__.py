@@ -16,4 +16,4 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from . import backend # flake8: noqa
+from .am import AM # flake8: noqa
