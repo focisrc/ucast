@@ -16,6 +16,26 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from .utils import *
+import datetime
 
-from . import backend # flake8: noqa
+def latest_gfs_cycle_time(lag=6):
+    """
+    Get the datetime corresponding to the most recent GFS cycle time.
+
+    Args:
+        lag: The default GFS forecast production lag is 6 hours.  To
+            get an earlier forecast, this might be set somewhat
+            shorter, with due care taken to ensure it isn't set too
+            short.
+
+    Returns:
+        The most recent GFS cycle time.
+
+    """
+    now = datetime.datetime.utcnow()
+    lag = datetime.timedelta(hours=lag)
+    gfs = now - lag
+    return gfs.replace(hour=gfs.hour//6*6,
+                       minute=0,
+                       second=0,
+                       microsecond=0)
