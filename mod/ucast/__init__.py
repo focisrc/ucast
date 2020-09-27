@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from .utils import *
+from .cycle   import *
+from .url     import get_url
+from .request import get_request
 
 from . import backend # flake8: noqa

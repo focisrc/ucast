@@ -16,53 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime, timedelta
 from math import floor
 
 import sys
 import requests
 import time
-
-def relative_gfs_cycle_time(ref, lag):
-    """GFS forecast cycle time relative to another time.
-
-    This function returns the datetime corresponding to a GFS forecast
-    cycle time displaced by some number of hours relative to another
-    GFS cycle time.  For example,
-
-        relative_gfs_cycle_time(ref, 12)
-
-    will return the GFS cycle time 12 hours before the cycle
-    corresponding to `ref`
-
-    Args:
-        ref: Reference time
-        lag: Lag time in hour
-
-    Returns:
-        The relative GFS cycle time.
-
-    """
-    gfs = ref - timedelta(hours=lag)
-    return gfs.replace(hour=gfs.hour//6*6,
-                       minute=0,
-                       second=0,
-                       microsecond=0)
-
-def latest_gfs_cycle_time(lag=6):
-    """The most recent GFS cycle time.
-
-    Args:
-        lag: The default GFS forecast production lag is 6 hours.  To
-            get an earlier forecast, this might be set somewhat
-            shorter, with due care taken to ensure it isn't set too
-            short.
-
-    Returns:
-        The most recent GFS cycle time.
-
-    """
-    return relative_gfs_cycle_time(datetime.utcnow(), lag)
 
 def cgi_url(g):
     """URL for the CGI interface for getting GFS data.
@@ -146,33 +104,3 @@ def get_url(lat, lon, grid_delta, d, c, f):
     ])
 
     return '?'.join([cgi_url(g), query])
-
-def errln(s):
-    print(s, file=sys.stderr)
-
-def err(s):
-    print(s, file=sys.stderr, end='')
-
-def get_request(url, retry=4, delay=60, ctime=4, rtime=4):
-    while True:
-        retry -= 1
-
-        try:
-            r = requests.get(url, timeout=(ctime, rtime))
-            if r.status_code == requests.codes.ok:
-                return r
-        except requests.exceptions.ConnectTimeout:
-            err("Connection timed out.")
-        except requests.exceptions.ReadTimeout:
-            err("Data download timed out.")
-        else:
-            err(f"Download failed with status code {r.status_code}.")
-
-        if retry:
-            errln("  Retrying...")
-            time.sleep(delay)
-        else:
-            errln("  Giving up.")
-            break
-
-    errln(f'Failed URL was: "{url}".')
