@@ -39,3 +39,30 @@ def latest_gfs_cycle_time(lag=6):
                        minute=0,
                        second=0,
                        microsecond=0)
+
+def relative_gfs_cycle_time(ref, lag):
+    """The GFS forecast cycle time relative to another time.
+
+    This function returns the datetime corresponding to a GFS forecast
+    cycle time displaced by some number of hours relative to another
+    GFS cycle time.  For example,
+
+        relative_gfs_cycle_time(ref, 12)
+
+    will return the GFS cycle time 12 hours before the cycle
+    corresponding to `ref`
+
+    Args:
+        ref: Reference time
+        lag: Lag time in hour
+
+    Returns:
+        The relative GFS cycle time.
+
+    """
+    lag = datetime.timedelta(hours=lag)
+    gfs = ref - lag
+    return gfs.replace(hour=gfs.hour//6*6,
+                       minute=0,
+                       second=0,
+                       microsecond=0)
