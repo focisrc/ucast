@@ -19,6 +19,10 @@
 from datetime import datetime, timedelta
 from math import floor
 
+import sys
+import requests
+import time
+
 def relative_gfs_cycle_time(ref, lag):
     """GFS forecast cycle time relative to another time.
 
@@ -142,3 +146,33 @@ def get_url(lat, lon, grid_delta, d, c, f):
     ])
 
     return '?'.join([cgi_url(g), query])
+
+def errln(s):
+    print(s, file=sys.stderr)
+
+def err(s):
+    print(s, file=sys.stderr, end='')
+
+def get_request(url, retry=4, delay=60, ctime=4, rtime=4):
+    while True:
+        retry -= 1
+
+        try:
+            r = requests.get(url, timeout=(ctime, rtime))
+            if r.status_code == requests.codes.ok:
+                return r
+        except requests.exceptions.ConnectTimeout:
+            err("Connection timed out.")
+        except requests.exceptions.ReadTimeout:
+            err("Data download timed out.")
+        else:
+            err(f"Download failed with status code {r.status_code}.")
+
+        if retry:
+            errln("  Retrying...")
+            time.sleep(delay)
+        else:
+            errln("  Giving up.")
+            break
+
+    errln(f'Failed URL was: "{url}".')
