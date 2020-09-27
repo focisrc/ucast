@@ -40,5 +40,6 @@ setup(
         'matplotlib>=3.2',
         'numpy>=1.19',
         'requests>=2.21',
+        'pygrib>=2.0.4',
     ],
 )

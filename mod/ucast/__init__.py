@@ -19,5 +19,6 @@
 from .cycle   import *
 from .url     import get_url
 from .request import get_request
+from .grb     import get_grb
 
 from . import backend # flake8: noqa
