@@ -22,6 +22,8 @@ import sys
 import requests
 import time
 
+from .core import variables, levels
+
 def cgi_url(g):
     """URL for the CGI interface for getting GFS data.
 
@@ -49,24 +51,9 @@ def product_query(c, g, f):
     """
     return f"file=gfs.t{c:02d}z.pgrb2.{g}.{f}"
 
-# GFS variables to be requested
-variables = (
-    "CLWMR", # Cloud liquid water mass mixing ratio [kg liquid / kg air]
-    "ICMR",  # Cloud ice mass mixing ratio [kg liquid / kg air]
-    "HGT",   # Geopotential height [m]
-    "O3MR",  # Ozone mass mixing ratio [kg O3 / kg air]
-    "RH",    # Relative Humidity [%]
-    "TMP",   # Temperature [K]
-)
-
 def variable_query(v):
     """Query string for adding GFS variables to the CGI request URL."""
     return f"var_{v}=on"
-
-# GFS grid levels [mbar]
-levels = (
-    1, 2, 3, 5, 7, 10, 20, 30, 50, 70, 100, 150, 200, 250, 300, 350, 400,
-    450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 925, 950, 975, 1000)
 
 def level_query(l):
     """Query string used to add GFS grid level to the CGI request URL."""
