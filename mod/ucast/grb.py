@@ -33,6 +33,9 @@ grb_map = {
 
 def get_grb(r):
 
+    M_AIR = 28.964 # average dry air mass [g / mole]
+    M_O3  = 47.997 # O3 mass [g / mole]
+
     u = 0.5 #(lat/grid_delta) % 1
     v = 0.5 #(lon/grid_delta) % 1
 
@@ -55,4 +58,6 @@ def get_grb(r):
         for k, (name, bad) in grb_map.items():
             d[k] = np.array([grid_interp(name, l, bad) for l in levels])
 
+    d['o3_vmr'] *= M_AIR / M_O3 # convert mass mixing ratio to volume
+                                # mixing ratio
     return d
