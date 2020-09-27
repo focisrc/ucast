@@ -17,6 +17,7 @@
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime, timedelta
+from math import floor
 
 def relative_gfs_cycle_time(ref, lag):
     """GFS forecast cycle time relative to another time.
@@ -60,7 +61,7 @@ def latest_gfs_cycle_time(lag=6):
     return relative_gfs_cycle_time(datetime.utcnow(), lag)
 
 def cgi_url(g):
-    """URL for the CGI interface.
+    """URL for the CGI interface for getting GFS data.
 
     Args:
         g: grid spacing string defined below.
@@ -73,7 +74,10 @@ def product_query(c, g, f):
 
     Args:
         c:  forecast production cycle (00, 06, 12, 18).
-        g:  grid spacing string.
+        g:  grid spacing string.  The available GFS lat,lon grid
+            spacings are 0.25, 0.50, or 1.00 degrees.  In the GFS file
+            names and CGI interface, this is coded as "0p25" for 0.25
+            deg, etc.
         f:  forecast product, either "anl" for analysis at production
             time, or "fxxx" for forecast xxx hours in the future,
             where xxx ranges from 000 to 384 by 1-hour steps, by
@@ -120,3 +124,21 @@ def cycle_query(d, c):
 
     """
     return f"dir=%2Fgfs.{d}%2F{c:02d}"
+
+def get_url(lat, lon, grid_delta, d, c, f):
+    g = f"{grid_delta:.2f}".replace('.', 'p')
+
+    l = floor(lon / grid_delta) * grid_delta
+    b = floor(lat / grid_delta) * grid_delta
+    r = l + grid_delta
+    t = b + grid_delta
+
+    query = '&'.join([
+        product_query(c, g, f),
+        '&'.join(level_query(l)    for l in levels),
+        '&'.join(variable_query(v) for v in variables),
+        subregion_query(l, r, t, b),
+        cycle_query(d, c),
+    ])
+
+    return '?'.join([cgi_url(g), query])
