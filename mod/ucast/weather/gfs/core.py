@@ -29,7 +29,7 @@ class GFS:
 
     def __init__(self, site, cycle, product):
         # Step 1: download data from NOMADS
-        r = request(data_url(site.lat, site.lon, cycle, product))
+        r = request(data_url(site, cycle, product))
 
         # Step 2: save data to temporary file; load it back with `pygrib`
         with NamedTemporaryFile() as t:

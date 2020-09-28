@@ -67,7 +67,7 @@ def cycle_query(cycle):
     within that date."""
     return f"dir=%2Fgfs.{cycle:%Y%m%d}%2F{cycle:%H}"
 
-def data_url(lat, lon, cycle, product=None, grid_delta=0.25):
+def data_url(site, cycle, product=None, grid_delta=0.25):
     """Construct the full data request URL.
 
     These include the base URL for the NOMADS CGI, and various strings
@@ -92,7 +92,7 @@ def data_url(lat, lon, cycle, product=None, grid_delta=0.25):
         product_query(cycle, g, p),
         '&'.join(level_query(l)    for l in levels),
         '&'.join(variable_query(v) for v in variables),
-        subregion_query(lat, lon, grid_delta),
+        subregion_query(site.lat, site.lon, grid_delta),
         cycle_query(cycle),
     ])
     return '?'.join([cgi_url(g), query])
