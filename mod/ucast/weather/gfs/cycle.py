@@ -18,14 +18,14 @@
 
 from datetime import datetime, timedelta
 
-def relative_gfs_cycle_time(ref, lag):
+def relative_cycle(ref, lag):
     """GFS forecast cycle time relative to another time.
 
     This function returns the datetime corresponding to a GFS forecast
     cycle time displaced by some number of hours relative to another
     GFS cycle time.  For example,
 
-        relative_gfs_cycle_time(ref, 12)
+        relative_cycle(ref, 12)
 
     will return the GFS cycle time 12 hours before the cycle
     corresponding to `ref`
@@ -44,7 +44,7 @@ def relative_gfs_cycle_time(ref, lag):
                        second=0,
                        microsecond=0)
 
-def latest_gfs_cycle_time(lag=6):
+def latest_cycle(lag=6):
     """The most recent GFS cycle time.
 
     Args:
@@ -57,4 +57,4 @@ def latest_gfs_cycle_time(lag=6):
         The most recent GFS cycle time.
 
     """
-    return relative_gfs_cycle_time(datetime.utcnow(), lag)
+    return relative_cycle(datetime.utcnow(), lag)
