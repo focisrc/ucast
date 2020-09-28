@@ -17,5 +17,5 @@
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
 from .cycle  import *
-from .nomads import get_url
+from .nomads import data_url
 from .grb    import get_grb

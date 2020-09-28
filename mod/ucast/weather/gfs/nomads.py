@@ -59,8 +59,12 @@ def level_query(l):
     """Query string used to add GFS grid level to the CGI request URL."""
     return f"lev_{l:d}_mb=on"
 
-def subregion_query(l, r, t, b):
+def subregion_query(lat, lon, grid_delta):
     """Query string for the grid subset request."""
+    l = floor(lon / grid_delta) * grid_delta
+    b = floor(lat / grid_delta) * grid_delta
+    r = l + grid_delta
+    t = b + grid_delta
     return f"subregion=&leftlon={l}&rightlon={r}&toplat={t}&bottomlat={b}"
 
 def cycle_query(d, c):
@@ -74,20 +78,21 @@ def cycle_query(d, c):
     """
     return f"dir=%2Fgfs.{d}%2F{c:02d}"
 
-def get_url(lat, lon, grid_delta, d, c, f):
+def data_url(lat, lon, grid_delta, d, c, f):
+    """Construct the full data request URL.
+
+    These include the base URL for the NOMADS CGI, and various strings
+    for formatting the arguments given to it.  Note that some
+    information (e.g. grid, forecast production cycle) gets used more
+    than once to construct the CGI request.
+
+    """
     g = f"{grid_delta:.2f}".replace('.', 'p')
-
-    l = floor(lon / grid_delta) * grid_delta
-    b = floor(lat / grid_delta) * grid_delta
-    r = l + grid_delta
-    t = b + grid_delta
-
     query = '&'.join([
         product_query(c, g, f),
         '&'.join(level_query(l)    for l in levels),
         '&'.join(variable_query(v) for v in variables),
-        subregion_query(l, r, t, b),
+        subregion_query(lat, lon, grid_delta),
         cycle_query(d, c),
     ])
-
     return '?'.join([cgi_url(g), query])
