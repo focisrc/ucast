@@ -26,7 +26,7 @@ def errln(s):
 def err(s):
     print(s, file=sys.stderr, end='')
 
-def get_request(url, retry=4, delay=60, ctime=4, rtime=4):
+def request(url, retry=4, delay=60, ctime=4, rtime=4):
     while True:
         retry -= 1
 
