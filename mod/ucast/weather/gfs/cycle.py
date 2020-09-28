@@ -38,11 +38,11 @@ def relative_cycle(ref, lag):
         The relative GFS cycle time.
 
     """
-    gfs = ref - timedelta(hours=lag)
-    return gfs.replace(hour=gfs.hour//6*6,
-                       minute=0,
-                       second=0,
-                       microsecond=0)
+    last = ref - timedelta(hours=lag)
+    return last.replace(hour=(last.hour//6)*6,
+                        minute=0,
+                        second=0,
+                        microsecond=0)
 
 def latest_cycle(lag=6):
     """The most recent GFS cycle time.
