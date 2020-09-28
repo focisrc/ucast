@@ -32,9 +32,6 @@ load_map = {
 
 def load(path, site, grid_delta=0.25):
 
-    M_AIR = 28.964 # average dry air mass [g / mole]
-    M_O3  = 47.997 # O3 mass [g / mole]
-
     u = (site.lat/grid_delta) % 1
     v = (site.lon/grid_delta) % 1
 
@@ -53,6 +50,4 @@ def load(path, site, grid_delta=0.25):
     for k, (name, bad) in load_map.items():
         d[k] = np.array([grid_interp(name, l, bad) for l in levels])
 
-    d['o3_vmr'] *= M_AIR / M_O3 # convert mass mixing ratio to volume
-                                # mixing ratio
     return d

@@ -22,6 +22,9 @@ from ...request import request
 from .nomads    import data_url
 from .grib      import load
 
+M_AIR = 28.964 # average dry air mass [g / mole]
+M_O3  = 47.997 # O3 mass [g / mole]
+
 class GFS:
 
     def __init__(self, site, cycle, product):
@@ -34,6 +37,9 @@ class GFS:
                 f.write(r.content)
             d = load(t.name, site)
 
-        # Step 3: set the instance attributes
+        # Step 3: convert mass mixing ratio to volume mixing ratio
+        d['o3_vmr'] *= M_AIR / M_O3
+
+        # Step 4: set the instance attributes
         for k, v in d.items():
             setattr(self, k, v)
