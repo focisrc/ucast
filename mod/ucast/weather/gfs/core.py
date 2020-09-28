@@ -32,7 +32,7 @@ class GFS:
         with NamedTemporaryFile() as t:
             with open(t.name, "wb") as f:
                 f.write(r.content)
-            d = load(t.name)
+            d = load(t.name, site)
 
         # Step 3: set the instance attributes
         for k, v in d.items():

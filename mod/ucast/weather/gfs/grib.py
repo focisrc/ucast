@@ -30,13 +30,13 @@ load_map = {
     'cloud_imr': ("Ice water mixing ratio",   0.0),
 }
 
-def load(path):
+def load(path, site, grid_delta=0.25):
 
     M_AIR = 28.964 # average dry air mass [g / mole]
     M_O3  = 47.997 # O3 mass [g / mole]
 
-    u = 0.5 #(lat/grid_delta) % 1
-    v = 0.5 #(lon/grid_delta) % 1
+    u = (site.lat/grid_delta) % 1
+    v = (site.lon/grid_delta) % 1
 
     idx = pygrib.index(path, "name", "level")
 
