@@ -39,31 +39,12 @@ levels = (
 )
 
 def cgi_url(g):
-    """URL for the CGI interface for getting GFS data.
-
-    Args:
-        g: grid spacing string defined below.
-
-    """
+    """URL for the CGI interface for getting GFS data."""
     return f"https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_{g}_1hr.pl"
 
-def product_query(c, g, f):
-    """Query string for requesting the kind of data product.
-
-    Args:
-        c:  forecast production cycle (00, 06, 12, 18).
-        g:  grid spacing string.  The available GFS lat,lon grid
-            spacings are 0.25, 0.50, or 1.00 degrees.  In the GFS file
-            names and CGI interface, this is coded as "0p25" for 0.25
-            deg, etc.
-        f:  forecast product, either "anl" for analysis at production
-            time, or "fxxx" for forecast xxx hours in the future,
-            where xxx ranges from 000 to 384 by 1-hour steps, by
-            1-hour steps up to 120 hours, and by 3-hour steps
-            thereafter.
-
-    """
-    return f"file=gfs.t{c:02d}z.pgrb2.{g}.{f}"
+def product_query(cycle, g, p):
+    """Query string for requesting the kind of data product."""
+    return f"file=gfs.t{cycle:%H}z.pgrb2.{g}.{p}"
 
 def variable_query(v):
     """Query string for adding GFS variables to the CGI request URL."""
@@ -81,18 +62,12 @@ def subregion_query(lat, lon, grid_delta):
     t = b + grid_delta
     return f"subregion=&leftlon={l}&rightlon={r}&toplat={t}&bottomlat={b}"
 
-def cycle_query(d, c):
+def cycle_query(cycle):
     """Query string for requesting the specific data and production cycle
-    within that date.
+    within that date."""
+    return f"dir=%2Fgfs.{cycle:%Y%m%d}%2F{cycle:%H}"
 
-    Args:
-        d:  date in the form YYYYMMDD.
-        c:  forecast production cycle (00, 06, 12, 18).
-
-    """
-    return f"dir=%2Fgfs.{d}%2F{c:02d}"
-
-def data_url(lat, lon, grid_delta, d, c, f):
+def data_url(lat, lon, cycle, product=None, grid_delta=0.25):
     """Construct the full data request URL.
 
     These include the base URL for the NOMADS CGI, and various strings
@@ -101,12 +76,23 @@ def data_url(lat, lon, grid_delta, d, c, f):
     than once to construct the CGI request.
 
     """
+
+    # Grid spacing string: the available GFS lat,lon grid spacings are
+    # 0.25, 0.50, or 1.00 degrees.  In the GFS file names and CGI
+    # interface, this is coded as "0p25" for 0.25 deg, etc.
     g = f"{grid_delta:.2f}".replace('.', 'p')
+
+    # Forecast product: either "anl" for analysis at production time,
+    # or "fxxx" for forecast xxx hours in the future, where xxx ranges
+    # from 000 to 384 by 1-hour steps, by 1-hour steps up to 120
+    # hours, and by 3-hour steps thereafter.
+    p = 'anl' if product is None else f"f{product:03d}"
+
     query = '&'.join([
-        product_query(c, g, f),
+        product_query(cycle, g, p),
         '&'.join(level_query(l)    for l in levels),
         '&'.join(variable_query(v) for v in variables),
         subregion_query(lat, lon, grid_delta),
-        cycle_query(d, c),
+        cycle_query(cycle),
     ])
     return '?'.join([cgi_url(g), query])
