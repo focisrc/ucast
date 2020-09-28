@@ -61,3 +61,21 @@ class AM:
                     continue
 
         return sol
+
+
+class AMC:
+
+    @staticmethod
+    def column(name, value):
+        fu_map = {
+            'o3 vmr'          :('.3e', ''        ),
+            'h2o RH'          :('.2f', '%'       ),
+            'h2o RHi'         :('.2f', '%'       ),
+            'lwp_abs_Rayleigh':('.3e', ' kg*m^-2'),
+            'iwp_abs_Rayleigh':('.3e', ' kg*m^-2'),
+        }
+        if value > 0:
+            fmt, unit = fu_map[name]
+            return f"column {name} {value:{fmt}}{unit}"
+        else:
+            return None
