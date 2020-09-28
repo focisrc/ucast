@@ -20,6 +20,8 @@ import shutil
 import subprocess
 import re
 
+from ..core import levels
+
 class AM:
 
     # Column density units (cm^-2 equivalents)
@@ -95,3 +97,55 @@ class AMC:
             AMC.column("lwp_abs_Rayleigh", (dP / AMC.G_STD) * cloud_lmr),
             AMC.column("iwp_abs_Rayleigh", (dP / AMC.G_STD) * cloud_imr),
         ]))
+
+    def __repr__(self,
+                 Pbase, dP, z, T, o3_vmr, RH, cloud_lmr, cloud_imr,
+                 gfsdate, gfscycle, product_str, lat, lon, alt):
+
+        l = ["""#
+# Layer data below were derived from NCEP GFS model data obtained
+# from the NOAA Operational Model Archive Distribution System
+# (NOMADS).  See http://nomads.ncep.noaa.gov for more information.
+#
+#         Production date: {gfsdate}
+#                   Cycle: {gfscycle:02d} UT
+#                 Product: {product_str}
+#
+# Interpolated to
+#
+#                latitude: {lat} deg. N
+#               longitude: {lon} deg. E
+#   Geopotential altitude: {alt} m
+#
+"""]
+        for i,lev in enumerate(levels):
+            if z[i] < alt:
+                break
+            l.append(AMC.layer(
+                Pbase[i], dP[i], z[i], T[i], o3_vmr[i], RH[i], cloud_lmr[i], cloud_imr[i]))
+
+        if i == 0:
+            raise ValueError("User-specified altitude exceeds top GFS level")
+
+        if z[i] != alt:
+            def interp(u, arr, min=None):
+                return u * arr[i] + (1-u) * arr[i-1]
+
+            def interp2(u, arr):
+                a = u * arr[i] + (1-u) * arr[i-1]
+                return 0.5 * ((a if a > 0 else 0) + arr[i-1])
+
+            u = (alt - z[i-1]) / (z[i] - z[i-1])
+            P_s = np.exp(interp(u, np.log(Pbase)))
+            T_s = interp(u, T)
+
+            u = (P_s - Pbase[i-1]) / (Pbase[i] - Pbase[i-1])
+            l.append(AMC.layer(
+                P_s, dP_s, alt, T_s,
+                interp2(u, o3_vmr),
+                interp2(u, RH),
+                interp2(u, cloud_lmr),
+                interp2(u, cloud_imr),
+            ))
+
+        return '\n'.join(l)
