@@ -16,6 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from .cycle import *
-from .url   import get_url
-from .grb   import get_grb
+from .cycle  import *
+from .nomads import get_url
+from .grb    import get_grb
