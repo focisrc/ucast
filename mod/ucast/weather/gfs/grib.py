@@ -20,7 +20,7 @@ from tempfile import NamedTemporaryFile
 import numpy as np
 import pygrib
 
-from .core import levels
+from .nomads import levels
 
 load_map = {
     'z'        : ("Geopotential Height", -99999.0),
