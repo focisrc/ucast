@@ -18,4 +18,4 @@
 
 from .cycle  import *
 from .nomads import data_url
-from .grb    import get_grb
+from .grib   import load

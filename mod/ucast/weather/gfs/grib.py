@@ -22,7 +22,7 @@ import pygrib
 
 from .core import levels
 
-grb_map = {
+load_map = {
     'z'        : ("Geopotential Height", -99999.0),
     'T'        : ("Temperature",         -99999.0),
     'o3_vmr'   : ("Ozone mixing ratio",       0.0),
@@ -31,7 +31,7 @@ grb_map = {
     'cloud_imr': ("Ice water mixing ratio",   0.0),
 }
 
-def get_grb(r):
+def load(r):
 
     M_AIR = 28.964 # average dry air mass [g / mole]
     M_O3  = 47.997 # O3 mass [g / mole]
@@ -55,7 +55,7 @@ def get_grb(r):
                         a[0][1] * (1.0-u) *      v  + a[1][1] * u *      v   )
 
         d = {'Pbase':np.array(levels)}
-        for k, (name, bad) in grb_map.items():
+        for k, (name, bad) in load_map.items():
             d[k] = np.array([grid_interp(name, l, bad) for l in levels])
 
     d['o3_vmr'] *= M_AIR / M_O3 # convert mass mixing ratio to volume
