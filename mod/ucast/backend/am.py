@@ -65,6 +65,9 @@ class AM:
 
 class AMC:
 
+    G_STD               = 9.80665  # standard gravity [m / s^2]
+    H2O_SUPERCOOL_LIMIT = 238.     # Assume ice below this temperature [K]
+
     @staticmethod
     def column(name, value):
         fu_map = {
@@ -79,3 +82,16 @@ class AMC:
             return f"column {name} {value:{fmt}}{unit}"
         else:
             return None
+
+    @staticmethod
+    def layer(Pbase, dP, alt, T, o3_vmr, RH, cloud_lmr, cloud_imr):
+        return '\n'.join(filter(None, [
+             "layer",
+            f"Pbase {Pbase:.1f} mbar  # {alt:.1f} m",
+            f"Tbase {T:.1f} K",
+             "column dry_air vmr",
+            AMC.column('o3 vmr', o3_vmr),
+            AMC.column("h2o RH" if T > AMC.H2O_SUPERCOOL_LIMIT else "h2o RHi", RH),
+            AMC.column("lwp_abs_Rayleigh", (dP / AMC.G_STD) * cloud_lmr),
+            AMC.column("iwp_abs_Rayleigh", (dP / AMC.G_STD) * cloud_imr),
+        ]))
