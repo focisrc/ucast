@@ -15,3 +15,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
+
+from tempfile import NamedTemporaryFile
+
+from ...request import request
+from .nomads    import data_url
+from .grib      import load
+
+class GFS:
+
+    def __init__(self, site, cycle, product):
+        # Step 1: download data from NOMADS
+        r = request(data_url(site.lat, site.lon, cycle, product))
+
+        # Step 2: save data to temporary file; load it back with `pygrib`
+        with NamedTemporaryFile() as t:
+            with open(t.name, "wb") as f:
+                f.write(r.content)
+            d = load(t.name)
+
+        # Step 3: set the instance attributes
+        for k, v in d.items():
+            setattr(self, k, v)

@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from tempfile import NamedTemporaryFile
 import numpy as np
 import pygrib
 
@@ -31,7 +30,7 @@ load_map = {
     'cloud_imr': ("Ice water mixing ratio",   0.0),
 }
 
-def load(r):
+def load(path):
 
     M_AIR = 28.964 # average dry air mass [g / mole]
     M_O3  = 47.997 # O3 mass [g / mole]
@@ -39,24 +38,20 @@ def load(r):
     u = 0.5 #(lat/grid_delta) % 1
     v = 0.5 #(lon/grid_delta) % 1
 
-    with NamedTemporaryFile() as t:
-        with open(t.name, "wb") as f:
-            f.write(r.content)
+    idx = pygrib.index(path, "name", "level")
 
-        idx = pygrib.index(t.name, "name", "level")
+    def grid_interp(name, level, bad):
+        try:
+            a = idx.select(name=name, level=level)[0].values
+        except:
+            return bad
+        else:
+            return (a[0][0] * (1.0-u) * (1.0-v) + a[1][0] * u * (1.0-v) +
+                    a[0][1] * (1.0-u) *      v  + a[1][1] * u *      v   )
 
-        def grid_interp(name, level, bad):
-            try:
-                a = idx.select(name=name, level=level)[0].values
-            except:
-                return bad
-            else:
-                return (a[0][0] * (1.0-u) * (1.0-v) + a[1][0] * u * (1.0-v) +
-                        a[0][1] * (1.0-u) *      v  + a[1][1] * u *      v   )
-
-        d = {'Pbase':np.array(levels)}
-        for k, (name, bad) in load_map.items():
-            d[k] = np.array([grid_interp(name, l, bad) for l in levels])
+    d = {'Pbase':np.array(levels)}
+    for k, (name, bad) in load_map.items():
+        d[k] = np.array([grid_interp(name, l, bad) for l in levels])
 
     d['o3_vmr'] *= M_AIR / M_O3 # convert mass mixing ratio to volume
                                 # mixing ratio
