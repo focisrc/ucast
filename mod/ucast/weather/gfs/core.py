@@ -29,12 +29,6 @@ class GFS:
 
     def __init__(self, site, cycle, product=None, gridsz=GRIDSZ):
 
-        # Forecast product: either "anl" for analysis at production
-        # time, or "fxxx" for forecast xxx hours in the future, where
-        # xxx ranges from 000 to 384 by 1-hour steps, by 1-hour steps
-        # up to 120 hours, and by 3-hour steps thereafter.
-        product = f"f{product:03d}" if isinstance(product, int) else "anl"
-
         # Step 1: download data from NOMADS
         r = request(data_url(site, cycle, product, gridsz))
 

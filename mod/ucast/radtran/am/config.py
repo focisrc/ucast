@@ -86,6 +86,7 @@ def delta(arr, n, u):
 
 def config(gfs):
 
+    p = f"{gfs.product:03d} hour forecast" if isinstance(gfs.product, int) else "analysis"
     z = gfs.site.alt
 
     # Prepare for regriding
@@ -126,13 +127,13 @@ def config(gfs):
 #
 #         Production date: {gfs.cycle:%Y%m%d}
 #                   Cycle: {gfs.cycle:%H} UT
-#                 Product: {gfs.product}
+#                 Product: {p}
 #
 # Interpolated to
 #
 #                latitude: {gfs.site.lat} deg. N
 #               longitude: {gfs.site.lon} deg. E
-#   Geopotential altitude: {gfs.site.alt} m
+#   Geopotential altitude: {z} m
 #"""]
 
     for i in range(len(T)):

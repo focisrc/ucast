@@ -75,12 +75,18 @@ def data_url(site, cycle, product, gridsz):
     than once to construct the CGI request.
 
     """
+    # Forecast product: either "anl" for analysis at production
+    # time, or "fxxx" for forecast xxx hours in the future, where
+    # xxx ranges from 000 to 384 by 1-hour steps, by 1-hour steps
+    # up to 120 hours, and by 3-hour steps thereafter.
+    p = f"f{product:03d}" if isinstance(product, int) else "anl"
+
     # In the GFS file names and CGI interface, this is coded as "0p25"
     # for 0.25 deg, etc.
     g = f"{gridsz:.2f}".replace('.', 'p')
 
     query = '&'.join([
-        product_query(cycle, g, product),
+        product_query(cycle, g, p),
         '&'.join(level_query(l)    for l in levels),
         '&'.join(variable_query(v) for v in variables),
         subregion_query(site.lat, site.lon, gridsz),
