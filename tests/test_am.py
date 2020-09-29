@@ -19,5 +19,5 @@
 import ucast as uc
 
 def test_am():
-    am = uc.backend.AM(path='/dev/null/')
+    am = uc.radtran.am.AM(path='/dev/null/')
     assert am is not None
