@@ -51,10 +51,13 @@ def layer(Pbase, dP, alt, T, o3_vmr, RH, cloud_lmr, cloud_imr):
 
 def config(gfs):
 
+    M_AIR = 28.964  # average dry air mass [g / mole]
+    M_O3  = 47.997  # O3 mass [g / mole]
+
     Pbase     = gfs.Pbase
     z         = gfs.z
     T         = gfs.T
-    o3_vmr    = gfs.o3_vmr
+    o3_vmr    = gfs.o3_vmr * (M_AIR / M_O3)
     RH        = gfs.RH
     cloud_lmr = gfs.cloud_lmr
     cloud_imr = gfs.cloud_imr
