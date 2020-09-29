@@ -62,23 +62,23 @@ def config(gfs):
     cloud_lmr = gfs.cloud_lmr
     cloud_imr = gfs.cloud_imr
 
-    alt       = 1
+    alt       = gfs.site.alt
     dP        = Pbase
 
-    l = ["""#
+    l = [f"""#
 # Layer data below were derived from NCEP GFS model data obtained
 # from the NOAA Operational Model Archive Distribution System
 # (NOMADS).  See http://nomads.ncep.noaa.gov for more information.
 #
-#         Production date: {gfsdate}
-#                   Cycle: {gfscycle:02d} UT
-#                 Product: {product_str}
+#         Production date: {gfs.cycle:%Y%m%d}
+#                   Cycle: {gfs.cycle:%H} UT
+#                 Product: {gfs.product}
 #
 # Interpolated to
 #
-#                latitude: {lat} deg. N
-#               longitude: {lon} deg. E
-#   Geopotential altitude: {alt} m
+#                latitude: {gfs.site.lat} deg. N
+#               longitude: {gfs.site.lon} deg. E
+#   Geopotential altitude: {gfs.site.alt} m
 #"""]
     for i,lev in enumerate(levels):
         if z[i] < alt:
@@ -112,4 +112,4 @@ def config(gfs):
             interp2(u, cloud_imr),
         ))
 
-    return '\n\n'.join(l)
+    return "\n\n".join(l)
