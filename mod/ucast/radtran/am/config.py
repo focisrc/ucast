@@ -49,8 +49,18 @@ def layer(Pbase, dP, alt, T, o3_vmr, RH, cloud_lmr, cloud_imr):
         column("iwp_abs_Rayleigh", (dP / G_STD) * cloud_imr),
     ]))
 
-def config(Pbase, dP, z, T, o3_vmr, RH, cloud_lmr, cloud_imr,
-           gfsdate, gfscycle, product_str, lat, lon, alt):
+def config(gfs):
+
+    Pbase     = gfs.Pbase
+    z         = gfs.z
+    T         = gfs.T
+    o3_vmr    = gfs.o3_vmr
+    RH        = gfs.RH
+    cloud_lmr = gfs.cloud_lmr
+    cloud_imr = gfs.cloud_imr
+
+    alt       = 1
+    dP        = Pbase
 
     l = ["""#
 # Layer data below were derived from NCEP GFS model data obtained
@@ -66,8 +76,7 @@ def config(Pbase, dP, z, T, o3_vmr, RH, cloud_lmr, cloud_imr,
 #                latitude: {lat} deg. N
 #               longitude: {lon} deg. E
 #   Geopotential altitude: {alt} m
-#
-"""]
+#"""]
     for i,lev in enumerate(levels):
         if z[i] < alt:
             break
@@ -85,9 +94,11 @@ def config(Pbase, dP, z, T, o3_vmr, RH, cloud_lmr, cloud_imr,
             a = u * arr[i] + (1-u) * arr[i-1]
             return 0.5 * ((a if a > 0 else 0) + arr[i-1])
 
-        u = (alt - z[i-1]) / (z[i] - z[i-1])
+        u   = (alt - z[i-1]) / (z[i] - z[i-1])
         P_s = np.exp(interp(u, np.log(Pbase)))
         T_s = interp(u, T)
+
+        dP_s = P_s
 
         u = (P_s - Pbase[i-1]) / (Pbase[i] - Pbase[i-1])
         l.append(layer(
@@ -98,4 +109,4 @@ def config(Pbase, dP, z, T, o3_vmr, RH, cloud_lmr, cloud_imr,
             interp2(u, cloud_imr),
         ))
 
-    return '\n'.join(l)
+    return '\n\n'.join(l)
