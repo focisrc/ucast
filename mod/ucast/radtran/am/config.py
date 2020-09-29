@@ -20,8 +20,12 @@ import numpy as np
 
 from ...weather.gfs.nomads import levels
 
+# Physical constants
 G_STD               = 9.80665  # standard gravity [m / s^2]
+M_AIR               = 28.964   # average dry air mass [g / mole]
+M_O3                = 47.997   # O3 mass [g / mole]
 H2O_SUPERCOOL_LIMIT = 238.     # Assume ice below this temperature [K]
+PASCAL_ON_MBAR      = 100.     # conversion from mbar (hPa) to Pa
 
 def column(name, value):
     fu_map = {
@@ -50,9 +54,6 @@ def layer(Pbase, dP, alt, T, o3_vmr, RH, cloud_lmr, cloud_imr):
     ]))
 
 def config(gfs):
-
-    M_AIR = 28.964  # average dry air mass [g / mole]
-    M_O3  = 47.997  # O3 mass [g / mole]
 
     Pbase     = gfs.Pbase
     z         = gfs.z

@@ -21,13 +21,15 @@ import pygrib
 
 from .nomads import levels
 
+BADVAL = -99999.0  # placeholder for missing or undefined data
+
 load_map = {
-    'z'        : ("Geopotential Height", -99999.0),
-    'T'        : ("Temperature",         -99999.0),
-    'o3_vmr'   : ("Ozone mixing ratio",       0.0),
-    'RH'       : ("Relative humidity",        0.0),
-    'cloud_lmr': ("Cloud mixing ratio",       0.0),
-    'cloud_imr': ("Ice water mixing ratio",   0.0),
+    'z'        : ("Geopotential Height", BADVAL),
+    'T'        : ("Temperature",         BADVAL),
+    'o3_vmr'   : ("Ozone mixing ratio",     0.0),
+    'RH'       : ("Relative humidity",      0.0),
+    'cloud_lmr': ("Cloud mixing ratio",     0.0),
+    'cloud_imr': ("Ice water mixing ratio", 0.0),
 }
 
 def load(path, site, grid_delta=0.25):

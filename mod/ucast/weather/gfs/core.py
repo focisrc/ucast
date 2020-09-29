@@ -22,9 +22,12 @@ from ...request import request
 from .nomads    import data_url
 from .grib      import load
 
+GRIDSZ = 0.25  # Grid spacing string: the available GFS lat,lon grid
+               # spacings are 0.25, 0.50, or 1.00 degrees.
+
 class GFS:
 
-    def __init__(self, site, cycle, product=None, gridsz=0.25):
+    def __init__(self, site, cycle, product=None, gridsz=GRIDSZ):
 
         # Forecast product: either "anl" for analysis at production
         # time, or "fxxx" for forecast xxx hours in the future, where

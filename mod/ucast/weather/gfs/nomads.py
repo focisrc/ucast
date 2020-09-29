@@ -75,9 +75,8 @@ def data_url(site, cycle, product, gridsz):
     than once to construct the CGI request.
 
     """
-    # Grid spacing string: the available GFS lat,lon grid spacings are
-    # 0.25, 0.50, or 1.00 degrees.  In the GFS file names and CGI
-    # interface, this is coded as "0p25" for 0.25 deg, etc.
+    # In the GFS file names and CGI interface, this is coded as "0p25"
+    # for 0.25 deg, etc.
     g = f"{gridsz:.2f}".replace('.', 'p')
 
     query = '&'.join([

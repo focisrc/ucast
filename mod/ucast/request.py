@@ -20,13 +20,23 @@ import sys
 import time
 import requests
 
+# Timeouts and retries
+CONN_TIMEOUT        = 4   # Initial server response timeout in seconds
+READ_TIMEOUT        = 4   # Stalled download timeout in seconds
+RETRY_DELAY         = 60  # Delay before retry (NOAA requests 60 s)
+MAX_DOWNLOAD_TRIES  = 4
+
 def errln(s):
     print(s, file=sys.stderr)
 
 def err(s):
     print(s, file=sys.stderr, end='')
 
-def request(url, retry=4, delay=60, ctime=4, rtime=4):
+def request(url,
+            ctime=CONN_TIMEOUT,
+            rtime=READ_TIMEOUT,
+            delay=RETRY_DELAY,
+            retry=MAX_DOWNLOAD_TRIES):
     while True:
         retry -= 1
 
