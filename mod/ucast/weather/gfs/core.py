@@ -27,9 +27,16 @@ M_O3  = 47.997 # O3 mass [g / mole]
 
 class GFS:
 
-    def __init__(self, site, cycle, product):
+    def __init__(self, site, cycle, product=None, gridsz=0.25):
+
+        # Forecast product: either "anl" for analysis at production
+        # time, or "fxxx" for forecast xxx hours in the future, where
+        # xxx ranges from 000 to 384 by 1-hour steps, by 1-hour steps
+        # up to 120 hours, and by 3-hour steps thereafter.
+        product = f"f{product:03d}" if isinstance(product, int) else "anl"
+
         # Step 1: download data from NOMADS
-        r = request(data_url(site, cycle, product))
+        r = request(data_url(site, cycle, product, gridsz))
 
         # Step 2: save data to temporary file; load it back with `pygrib`
         with NamedTemporaryFile() as t:
@@ -41,5 +48,9 @@ class GFS:
         d['o3_vmr'] *= M_AIR / M_O3
 
         # Step 4: set the instance attributes
+        self.site    = site
+        self.cycle   = cycle
+        self.product = product
+        self.gridsz  = gridsz
         for k, v in d.items():
             setattr(self, k, v)

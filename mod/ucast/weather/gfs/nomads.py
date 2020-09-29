@@ -54,20 +54,19 @@ def level_query(l):
     """Query string used to add GFS grid level to the CGI request URL."""
     return f"lev_{l:d}_mb=on"
 
-def subregion_query(lat, lon, grid_delta):
+def subregion_query(lat, lon, gridsz):
     """Query string for the grid subset request."""
-    l = floor(lon / grid_delta) * grid_delta
-    b = floor(lat / grid_delta) * grid_delta
-    r = l + grid_delta
-    t = b + grid_delta
+    l = floor(lon / gridsz) * gridsz
+    b = floor(lat / gridsz) * gridsz
+    r = l + gridsz
+    t = b + gridsz
     return f"subregion=&leftlon={l}&rightlon={r}&toplat={t}&bottomlat={b}"
 
 def cycle_query(cycle):
-    """Query string for requesting the specific data and production cycle
-    within that date."""
+    """Query string for requesting the specific data and production cycle"""
     return f"dir=%2Fgfs.{cycle:%Y%m%d}%2F{cycle:%H}"
 
-def data_url(site, cycle, product=None, grid_delta=0.25):
+def data_url(site, cycle, product, gridsz):
     """Construct the full data request URL.
 
     These include the base URL for the NOMADS CGI, and various strings
@@ -76,23 +75,16 @@ def data_url(site, cycle, product=None, grid_delta=0.25):
     than once to construct the CGI request.
 
     """
-
     # Grid spacing string: the available GFS lat,lon grid spacings are
     # 0.25, 0.50, or 1.00 degrees.  In the GFS file names and CGI
     # interface, this is coded as "0p25" for 0.25 deg, etc.
-    g = f"{grid_delta:.2f}".replace('.', 'p')
-
-    # Forecast product: either "anl" for analysis at production time,
-    # or "fxxx" for forecast xxx hours in the future, where xxx ranges
-    # from 000 to 384 by 1-hour steps, by 1-hour steps up to 120
-    # hours, and by 3-hour steps thereafter.
-    p = 'anl' if product is None else f"f{product:03d}"
+    g = f"{gridsz:.2f}".replace('.', 'p')
 
     query = '&'.join([
-        product_query(cycle, g, p),
+        product_query(cycle, g, product),
         '&'.join(level_query(l)    for l in levels),
         '&'.join(variable_query(v) for v in variables),
-        subregion_query(site.lat, site.lon, grid_delta),
+        subregion_query(site.lat, site.lon, gridsz),
         cycle_query(cycle),
     ])
     return '?'.join([cgi_url(g), query])
