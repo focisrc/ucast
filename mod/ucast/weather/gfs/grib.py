@@ -48,7 +48,7 @@ def load(path, site, grid_delta=0.25):
             return (a[0][0] * (1.0-u) * (1.0-v) + a[1][0] * u * (1.0-v) +
                     a[0][1] * (1.0-u) *      v  + a[1][1] * u *      v   )
 
-    d = {'Pbase':np.array(levels)}
+    d = {'P':np.array(levels)}
     for k, (name, bad) in load_map.items():
         d[k] = np.array([grid_interp(name, l, bad) for l in levels])
 

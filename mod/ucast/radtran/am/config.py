@@ -41,30 +41,31 @@ def column(name, value):
     else:
         return None
 
-def layer(Pbase, dP, alt, T, o3_vmr, RH, cloud_lmr, cloud_imr):
+def layer(Pbase, zbase, Tbase, o3_vmr, RH, ctw, cti):
     return '\n'.join(filter(None, [
         "layer",
-       f"Pbase {Pbase:.1f} mbar  # {alt:.1f} m",
-       f"Tbase {T:.1f} K",
+       f"Pbase {Pbase:.1f} mbar  # {zbase:.1f} m",
+       f"Tbase {Tbase:.1f} K",
         "column dry_air vmr",
         column('o3 vmr', o3_vmr),
-        column("h2o RH" if T > H2O_SUPERCOOL_LIMIT else "h2o RHi", RH),
-        column("lwp_abs_Rayleigh", (dP / G_STD) * cloud_lmr),
-        column("iwp_abs_Rayleigh", (dP / G_STD) * cloud_imr),
+        column("h2o RH" if Tbase > H2O_SUPERCOOL_LIMIT else "h2o RHi", RH),
+        column("lwp_abs_Rayleigh", ctw),
+        column("iwp_abs_Rayleigh", cti),
     ]))
 
 def config(gfs):
 
-    Pbase     = gfs.Pbase
-    z         = gfs.z
-    T         = gfs.T
-    o3_vmr    = gfs.o3_vmr * (M_AIR / M_O3)
-    RH        = gfs.RH
-    cloud_lmr = gfs.cloud_lmr
-    cloud_imr = gfs.cloud_imr
+    z      = gfs.site.alt
 
-    alt       = gfs.site.alt
-    dP        = Pbase
+    Pb     = gfs.P
+    zb     = gfs.z
+    Tb     = gfs.T
+
+    dP     = Pb
+    o3_vmr = gfs.o3_vmr * (M_AIR / M_O3)
+    RH     = gfs.RH
+    ctw    = gfs.cloud_lmr * (dP / G_STD)
+    cti    = gfs.cloud_imr * (dP / G_STD)
 
     l = [f"""#
 # Layer data below were derived from NCEP GFS model data obtained
@@ -82,15 +83,16 @@ def config(gfs):
 #   Geopotential altitude: {gfs.site.alt} m
 #"""]
     for i,lev in enumerate(levels):
-        if z[i] < alt:
+        if zb[i] < z:
             break
         l.append(layer(
-            Pbase[i], dP[i], z[i], T[i], o3_vmr[i], RH[i], cloud_lmr[i], cloud_imr[i]))
+            Pb[i], zb[i], Tb[i],
+            o3_vmr[i], RH[i], ctw[i], cti[i]))
 
     if i == 0:
         raise ValueError("User-specified altitude exceeds top GFS level")
 
-    if z[i] != alt:
+    if zb[i] != z:
         def interp(u, arr, min=None):
             return u * arr[i] + (1-u) * arr[i-1]
 
@@ -98,19 +100,18 @@ def config(gfs):
             a = u * arr[i] + (1-u) * arr[i-1]
             return 0.5 * ((a if a > 0 else 0) + arr[i-1])
 
-        u   = (alt - z[i-1]) / (z[i] - z[i-1])
-        P_s = np.exp(interp(u, np.log(Pbase)))
-        T_s = interp(u, T)
+        u  = (z - zb[i-1]) / (zb[i] - zb[i-1])
+        Ps = np.exp(interp(u, np.log(Pb)))
+        Ts = interp(u, Tb)
+        dPs = Ps
 
-        dP_s = P_s
-
-        u = (P_s - Pbase[i-1]) / (Pbase[i] - Pbase[i-1])
+        u  = (Ps - Pb[i-1]) / (Pb[i] - Pb[i-1])
         l.append(layer(
-            P_s, dP_s, alt, T_s,
+            Ps, z, Ts,
             interp2(u, o3_vmr),
             interp2(u, RH),
-            interp2(u, cloud_lmr),
-            interp2(u, cloud_imr),
+            interp2(u, ctw),
+            interp2(u, cti),
         ))
 
     return "\n\n".join(l)
