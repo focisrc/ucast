@@ -26,7 +26,7 @@ BADVAL = -99999.0  # placeholder for missing or undefined data
 load_map = {
     'z'        : ("Geopotential Height", BADVAL),
     'T'        : ("Temperature",         BADVAL),
-    'o3_vmr'   : ("Ozone mixing ratio",     0.0),
+    'o3_mmr'   : ("Ozone mixing ratio",     0.0),
     'RH'       : ("Relative humidity",      0.0),
     'cloud_lmr': ("Cloud mixing ratio",     0.0),
     'cloud_imr': ("Ice water mixing ratio", 0.0),

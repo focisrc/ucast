@@ -41,31 +41,83 @@ def column(name, value):
     else:
         return None
 
-def layer(Pbase, zbase, Tbase, o3_vmr, RH, ctw, cti):
+def layer(Pb, zb, Tb, T, o3_vmr, RH, ctw, cti):
+    if T > H2O_SUPERCOOL_LIMIT:
+        h2o_label = "h2o RH"
+        ctw_label = "lwp_abs_Rayleigh"
+    else:
+        # Below the supercooling limit, assume any liquid water
+        # is really ice.  (GFS 15 occasionally has numerically
+        # negligible amounts of liquid water at unphysically
+        # low temperature.)
+        h2o_label = "h2o RHi"
+        ctw_label = "iwp_abs_Rayleigh"
     return '\n'.join(filter(None, [
         "layer",
-       f"Pbase {Pbase:.1f} mbar  # {zbase:.1f} m",
-       f"Tbase {Tbase:.1f} K",
+       f"Pbase {Pb:.1f} mbar  # {zb:.1f} m",
+       f"Tbase {Tb:.1f} K",
         "column dry_air vmr",
-        column('o3 vmr', o3_vmr),
-        column("h2o RH" if Tbase > H2O_SUPERCOOL_LIMIT else "h2o RHi", RH),
-        column("lwp_abs_Rayleigh", ctw),
+        column("o3 vmr", o3_vmr),
+        column(h2o_label, RH),
+        column(ctw_label, ctw),
         column("iwp_abs_Rayleigh", cti),
     ]))
 
+def interpos(a, b, u, log=False):
+    if log:
+        return np.exp(np.log(a) + np.log(b/a) * u)
+    else:
+        c = a + (b - a) * u
+        return c if c > 0.0 else 0.0
+
+def base(arr, n, u, log=False):
+    if u == 0.0:
+        return arr[:n]
+    else:
+        return np.r_[arr[:n], interpos(arr[n-1], arr[n], u, log=log)]
+
+def average(arr, n, u):
+    arr = base(arr, n, u)
+    return np.r_[arr[0], 0.5 * (arr[:-1]+arr[1:])]
+
+def delta(arr, n, u):
+    arr = base(arr, n, u)
+    return np.r_[0, arr[1:]-arr[:-1]]
+
 def config(gfs):
 
-    z      = gfs.site.alt
+    z = gfs.site.alt
 
-    Pb     = gfs.P
-    zb     = gfs.z
-    Tb     = gfs.T
+    # Prepare for regriding
+    if z > gfs.z[0]:
+        raise ValueError("User-specified altitude exceeds top GFS level")
 
-    dP     = Pb
-    o3_vmr = gfs.o3_vmr * (M_AIR / M_O3)
-    RH     = gfs.RH
-    ctw    = gfs.cloud_lmr * (dP / G_STD)
-    cti    = gfs.cloud_imr * (dP / G_STD)
+    # For pressure, height, and temperature, use the base values.
+    # The surface (last) value is interpolated with respect to z
+    n = np.argmax(gfs.z < z)
+    u = (gfs.z[n-1]-z) / (gfs.z[n-1]-gfs.z[n])
+
+    Pb = base(gfs.P, n, u, log=True)
+    zb = base(gfs.z, n, u)
+    Tb = base(gfs.T, n, u)
+
+    # For mixing ratios and RH, use averages over the two levels
+    # bounding the layer.
+    # The surface (last) value is interpolated with respect to P
+    u = (gfs.P[n-1]-Pb[-1]) / (gfs.P[n-1]-gfs.P[n])
+
+    T         = average(gfs.T,         n, u)
+    o3_vmr    = average(gfs.o3_mmr,    n, u) * (M_AIR/M_O3) # convert mass mixing ratio to volume mixing ratio
+    RH        = average(gfs.RH,        n, u)
+    cloud_lmr = average(gfs.cloud_lmr, n, u)
+    cloud_imr = average(gfs.cloud_imr, n, u)
+
+    # Convert cloud liquid water mixing ratios (lmr) and ice mixing
+    # ratio (imr) [kg / kg] to cloud total liquid water (ctw) and
+    # cloud total ice (cti) across the layer [kg / m^2].
+    m   = delta(Pb, n, u) * (PASCAL_ON_MBAR/G_STD)
+    ctw = cloud_lmr * m
+    cti = cloud_imr * m
 
     l = [f"""#
 # Layer data below were derived from NCEP GFS model data obtained
@@ -82,36 +134,10 @@ def config(gfs):
 #               longitude: {gfs.site.lon} deg. E
 #   Geopotential altitude: {gfs.site.alt} m
 #"""]
-    for i,lev in enumerate(levels):
-        if zb[i] < z:
-            break
+
+    for i in range(len(T)):
         l.append(layer(
             Pb[i], zb[i], Tb[i],
-            o3_vmr[i], RH[i], ctw[i], cti[i]))
-
-    if i == 0:
-        raise ValueError("User-specified altitude exceeds top GFS level")
-
-    if zb[i] != z:
-        def interp(u, arr, min=None):
-            return u * arr[i] + (1-u) * arr[i-1]
-
-        def interp2(u, arr):
-            a = u * arr[i] + (1-u) * arr[i-1]
-            return 0.5 * ((a if a > 0 else 0) + arr[i-1])
-
-        u  = (z - zb[i-1]) / (zb[i] - zb[i-1])
-        Ps = np.exp(interp(u, np.log(Pb)))
-        Ts = interp(u, Tb)
-        dPs = Ps
-
-        u  = (Ps - Pb[i-1]) / (Pb[i] - Pb[i-1])
-        l.append(layer(
-            Ps, z, Ts,
-            interp2(u, o3_vmr),
-            interp2(u, RH),
-            interp2(u, ctw),
-            interp2(u, cti),
-        ))
+            T[i], o3_vmr[i], RH[i], ctw[i], cti[i]))
 
     return "\n\n".join(l)
