@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from .weather import gfs
-from .radtran import am
-from .        import site
+from collections import namedtuple
+
+Site = namedtuple('Site', ['name', 'lat', 'lon', 'alt'])
+
+KP  = Site('KP',  31.953, -111.615, 1895.0)
+SMA = Site('SMA', 19.824, -155.478, 4080.0)
+SMT = Site('SMT', 32.701, -109.892, 3159)
