@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
+from os        import path
 from itertools import chain
 from datetime  import timedelta
 
@@ -27,6 +28,7 @@ import click
 
 columns = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
 dt_fmt  = "%Y%m%d_%H:%M:%S"
+length  = 210
 heading = "#            date       tau225        Tb[K]      pwv[mm] lwp[kg*m^-2] iwp[kg*m^-2]       o3[DU]\n"
 out_fmt = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
 
@@ -43,18 +45,26 @@ def ucast(lag, site):
     for hr_ago in range(0, 48+1, 6):
         cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
         outfile = cycle.strftime(dt_fmt)
-        print(outfile)
+
+        if path.isfile(outfile) and len(open(outfile).readlines()) == length:
+            print(f'Skip "{outfile}"')
+            continue
+        else:
+            print(f'Creating "{outfile}" ...', end='')
 
         df = pd.DataFrame(columns=columns)
         for hr_forecast in chain(range(120+1), range(123, 384+1, 3)):
             gfs  = uc.gfs.GFS(site, cycle, hr_forecast)
-            date = (gfs.cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
+            date = (latest_cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
             sol  = am.solve(gfs)
             df   = df.append({'date':date, **sol}, ignore_index=True)
 
         with open(outfile, "w") as f:
             f.write(heading)
             np.savetxt(f, df.fillna(0).values, fmt=out_fmt)
+
+        print(" DONE")
+
 
 if __name__ == "__main__":
     ucast()
