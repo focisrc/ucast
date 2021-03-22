@@ -36,8 +36,9 @@ out_fmt = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
 @click.command()
 @click.option("--lag",  default=5.2,  help="default lag")
 @click.option("--site", default='KP', help="Kitt Peak")
+@click.option("--run",  default='.',  help="Run directory")
 @click.option("--data", default=None, help="Data directory")
-def ucast(lag, site, data):
+def ucast(lag, site, run, data):
     """µcast: micro-weather forecasting for astronomy"""
 
     site         = getattr(uc.site, site)
@@ -46,7 +47,7 @@ def ucast(lag, site, data):
 
     for hr_ago in range(0, 48+1, 6):
         cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
-        outfile = cycle.strftime(dt_fmt)
+        outfile = path.join(run, cycle.strftime(dt_fmt))
 
         if path.isfile(outfile) and len(open(outfile).readlines()) == length:
             print(f'Skip "{outfile}"')
