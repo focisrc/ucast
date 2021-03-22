@@ -17,6 +17,7 @@
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
 from os        import path
+from os        import symlink
 from itertools import chain
 from datetime  import timedelta
 
@@ -35,7 +36,8 @@ out_fmt = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
 @click.command()
 @click.option("--lag",  default=5.2,  help="default lag")
 @click.option("--site", default='KP', help="Kitt Peak")
-def ucast(lag, site):
+@click.option("--data", default=None, help="Data directory")
+def ucast(lag, site, data):
     """µcast: micro-weather forecasting for astronomy"""
 
     site         = getattr(uc.site, site)
@@ -48,22 +50,26 @@ def ucast(lag, site):
 
         if path.isfile(outfile) and len(open(outfile).readlines()) == length:
             print(f'Skip "{outfile}"')
-            continue
         else:
             print(f'Creating "{outfile}" ...', end='')
 
-        df = pd.DataFrame(columns=columns)
-        for hr_forecast in chain(range(120+1), range(123, 384+1, 3)):
-            gfs  = uc.gfs.GFS(site, cycle, hr_forecast)
-            date = (latest_cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
-            sol  = am.solve(gfs)
-            df   = df.append({'date':date, **sol}, ignore_index=True)
+            df = pd.DataFrame(columns=columns)
+            for hr_forecast in chain(range(120+1), range(123, 384+1, 3)):
+                gfs  = uc.gfs.GFS(site, cycle, hr_forecast)
+                date = (gfs.cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
+                sol  = am.solve(gfs)
+                df   = df.append({'date':date, **sol}, ignore_index=True)
 
-        with open(outfile, "w") as f:
-            f.write(heading)
-            np.savetxt(f, df.fillna(0).values, fmt=out_fmt)
+            with open(outfile, "w") as f:
+                f.write(heading)
+                np.savetxt(f, df.fillna(0).values, fmt=out_fmt)
 
-        print(" DONE")
+            print(" DONE")
+
+        if data is not None:
+            target="latest" if hr_ago == 0 else f"latest-{hr_ago:02d}"
+            symlink(path.realpath(outfile),
+                    path.join(data, target))
 
 
 if __name__ == "__main__":
