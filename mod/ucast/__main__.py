@@ -20,7 +20,6 @@ import ucast as uc
 
 import click
 
-
 @click.command()
 @click.option("--lag",  default=5.2,  help="default lag")
 @click.option("--site", default='KP', help="Kitt Peak")
@@ -30,6 +29,11 @@ def ucast(lag, site):
     site         = getattr(uc.site, site)
     latest_cycle = uc.gfs.latest_cycle(lag=lag)
     am           = uc.am.AM()
+
+    for hr_ago in range(0, 48+1, 6):
+        cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
+        outfile = cycle.strftime("%Y%m%d_%H:%M:%S")
+        print(outfile)
 
 
 if __name__ == "__main__":
