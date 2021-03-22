@@ -16,11 +16,21 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
+import ucast as uc
+
 import click
 
+
 @click.command()
-def ucast(backend):
+@click.option("--lag",  default=5.2,  help="default lag")
+@click.option("--site", default='KP', help="Kitt Peak")
+def ucast(lag, site):
     """µcast: micro-weather forecasting for astronomy"""
+
+    site         = getattr(uc.site, site)
+    latest_cycle = uc.gfs.latest_cycle(lag=lag)
+    am           = uc.am.AM()
+
 
 if __name__ == "__main__":
     ucast()
