@@ -19,13 +19,16 @@
 from itertools import chain
 from datetime  import timedelta
 
-import pandas as pd
-import ucast  as uc
+import ucast as uc
 
+import numpy  as np
+import pandas as pd
 import click
 
 columns = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
 dt_fmt  = "%Y%m%d_%H:%M:%S"
+heading = "#            date       tau225        Tb[K]      pwv[mm] lwp[kg*m^-2] iwp[kg*m^-2]       o3[DU]\n"
+out_fmt = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
 
 @click.command()
 @click.option("--lag",  default=5.2,  help="default lag")
@@ -49,8 +52,9 @@ def ucast(lag, site):
             sol  = am.solve(gfs)
             df   = df.append({'date':date, **sol}, ignore_index=True)
 
-        print(df)
-
+        with open(outfile, "w") as f:
+            f.write(heading)
+            np.savetxt(f, df.fillna(0).values, fmt=out_fmt)
 
 if __name__ == "__main__":
     ucast()
