@@ -16,9 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-import ucast as uc
+from itertools import chain
+from datetime  import timedelta
+
+import pandas as pd
+import ucast  as uc
 
 import click
+
+dt_fmt = "%Y%m%d_%H:%M:%S"
 
 @click.command()
 @click.option("--lag",  default=5.2,  help="default lag")
@@ -32,8 +38,17 @@ def ucast(lag, site):
 
     for hr_ago in range(0, 48+1, 6):
         cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
-        outfile = cycle.strftime("%Y%m%d_%H:%M:%S")
+        outfile = cycle.strftime(dt_fmt)
         print(outfile)
+
+        df = pd.DataFrame()
+        for hr_forecast in chain(range(120+1), range(123, 384+1, 3)):
+            gfs  = uc.gfs.GFS(site, cycle, hr_forecast)
+            date = (gfs.cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
+            sol  = am.solve(gfs)
+            df   = df.append({'date':date, **sol}, ignore_index=True)
+
+        print(df)
 
 
 if __name__ == "__main__":
