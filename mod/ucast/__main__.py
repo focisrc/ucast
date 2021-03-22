@@ -24,7 +24,8 @@ import ucast  as uc
 
 import click
 
-dt_fmt = "%Y%m%d_%H:%M:%S"
+columns = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
+dt_fmt  = "%Y%m%d_%H:%M:%S"
 
 @click.command()
 @click.option("--lag",  default=5.2,  help="default lag")
@@ -41,7 +42,7 @@ def ucast(lag, site):
         outfile = cycle.strftime(dt_fmt)
         print(outfile)
 
-        df = pd.DataFrame()
+        df = pd.DataFrame(columns=columns)
         for hr_forecast in chain(range(120+1), range(123, 384+1, 3)):
             gfs  = uc.gfs.GFS(site, cycle, hr_forecast)
             date = (gfs.cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
