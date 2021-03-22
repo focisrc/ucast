@@ -19,9 +19,8 @@
 import click
 
 @click.command()
-@click.option('--backend', default='am', help='atmospherical model backend')
 def ucast(backend):
-    '''µcast: micro-weather forecasting for astronomy'''
+    """µcast: micro-weather forecasting for astronomy"""
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ucast()
