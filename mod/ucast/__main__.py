@@ -17,7 +17,6 @@
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
 from os        import path
-from os        import symlink
 from itertools import chain
 from datetime  import timedelta
 from tqdm      import tqdm
@@ -28,6 +27,7 @@ import requests
 import click
 
 import ucast as uc
+from ucast.utils import forced_symlink as symlink
 
 columns   = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
 dt_fmt    = "%Y%m%d_%H:%M:%S"
