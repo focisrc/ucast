@@ -64,7 +64,7 @@ def subregion_query(lat, lon, gridsz):
 
 def cycle_query(cycle):
     """Query string for requesting the specific data and production cycle"""
-    return f"dir=%2Fgfs.{cycle:%Y%m%d}%2F{cycle:%H}"
+    return f"dir=%2Fgfs.{cycle:%Y%m%d}%2F{cycle:%H}%2Fatmos"
 
 def data_url(site, cycle, product, gridsz):
     """Construct the full data request URL.
