@@ -36,12 +36,12 @@ setup(
     },
     python_requires='>=3.6', # `ucast` uses python3's f-string and typing
     install_requires=[
-        'click>=7.1',
-        'matplotlib>=3.2',
-        'numpy>=1.19',
-        'pandas>=1',
+        'click>=7.1.2',
+        'matplotlib>=3.2.2',
+        'numpy>=1.18.5',
+        'pandas>=1.0.5',
         'pygrib>=2.0.4',
-        'requests>=2.21',
-        'tqdm>=4.40.2',
+        'requests>=2.24.0',
+        'tqdm>=4.46.1',
     ],
 )
