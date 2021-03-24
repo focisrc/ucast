@@ -20,14 +20,14 @@ from os        import path
 from os        import symlink
 from itertools import chain
 from datetime  import timedelta
-
 from tqdm      import tqdm
-
-import ucast as uc
 
 import numpy  as np
 import pandas as pd
+import requests
 import click
+
+import ucast as uc
 
 columns   = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
 dt_fmt    = "%Y%m%d_%H:%M:%S"
@@ -43,12 +43,12 @@ def mktable(site, cycle):
     for hr_forecast in tqdm(forecasts, desc=cycle.strftime(dt_fmt)):
         try:
             gfs = uc.gfs.GFS(site, cycle, hr_forecast)
-        except:
-            pass # skip a row
-        else:
-            sol  = am.solve(gfs)
-            date = (gfs.cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
-            df   = df.append({'date':date, **sol}, ignore_index=True)
+        except requests.exceptions.RetryError as e:
+            continue # skip a row
+
+        sol  = am.solve(gfs)
+        date = (gfs.cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
+        df   = df.append({'date':date, **sol}, ignore_index=True)
 
     return df
 

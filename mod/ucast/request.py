@@ -59,3 +59,5 @@ def request(url,
             break
 
     errln(f'Failed URL was: "{url}".')
+    raise requests.exceptions.RetryError(
+        f'Tried downloading "{url}" {retry} times but failed')
