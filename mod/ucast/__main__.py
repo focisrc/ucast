@@ -33,6 +33,24 @@ length  = 210
 heading = "#            date       tau225        Tb[K]      pwv[mm] lwp[kg*m^-2] iwp[kg*m^-2]       o3[DU]\n"
 out_fmt = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
 
+am = uc.am.AM()
+
+def mktable(site, cycle):
+    df = pd.DataFrame(columns=columns)
+
+    for hr_forecast in chain(range(120+1), range(123, 384+1, 3)):
+        try:
+            gfs = uc.gfs.GFS(site, cycle, hr_forecast)
+        except:
+            pass # skip a row
+        else:
+            sol  = am.solve(gfs)
+            date = (gfs.cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
+            df   = df.append({'date':date, **sol}, ignore_index=True)
+
+    return df
+
+
 @click.command()
 @click.option("--lag",  default=5.2,  help="default lag")
 @click.option("--site", default='KP', help="Kitt Peak")
@@ -43,7 +61,6 @@ def ucast(lag, site, run, data):
 
     site         = getattr(uc.site, site)
     latest_cycle = uc.gfs.latest_cycle(lag=lag)
-    am           = uc.am.AM()
 
     for hr_ago in range(0, 48+1, 6):
         cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
@@ -53,18 +70,10 @@ def ucast(lag, site, run, data):
             print(f'Skip "{outfile}"')
         else:
             print(f'Creating "{outfile}" ...', end='')
-
-            df = pd.DataFrame(columns=columns)
-            for hr_forecast in chain(range(120+1), range(123, 384+1, 3)):
-                gfs  = uc.gfs.GFS(site, cycle, hr_forecast)
-                date = (gfs.cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
-                sol  = am.solve(gfs)
-                df   = df.append({'date':date, **sol}, ignore_index=True)
-
+            df = mktable(site, cycle)
             with open(outfile, "w") as f:
                 f.write(heading)
                 np.savetxt(f, df.fillna(0).values, fmt=out_fmt)
-
             print(" DONE")
 
         if data is not None:
