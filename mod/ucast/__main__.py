@@ -21,24 +21,26 @@ from os        import symlink
 from itertools import chain
 from datetime  import timedelta
 
+from tqdm      import tqdm
+
 import ucast as uc
 
 import numpy  as np
 import pandas as pd
 import click
 
-columns = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
-dt_fmt  = "%Y%m%d_%H:%M:%S"
-length  = 210
-heading = "#            date       tau225        Tb[K]      pwv[mm] lwp[kg*m^-2] iwp[kg*m^-2]       o3[DU]\n"
-out_fmt = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
+columns   = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
+dt_fmt    = "%Y%m%d_%H:%M:%S"
+forecasts = list(range(120+1)) + list(range(123, 384+1, 3))
+heading   = "#            date       tau225        Tb[K]      pwv[mm] lwp[kg*m^-2] iwp[kg*m^-2]       o3[DU]\n"
+out_fmt   = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
 
 am = uc.am.AM()
 
 def mktable(site, cycle):
     df = pd.DataFrame(columns=columns)
 
-    for hr_forecast in chain(range(120+1), range(123, 384+1, 3)):
+    for hr_forecast in tqdm(forecasts, desc=cycle.strftime(dt_fmt)):
         try:
             gfs = uc.gfs.GFS(site, cycle, hr_forecast)
         except:
@@ -66,7 +68,7 @@ def ucast(lag, site, run, data):
         cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
         outfile = path.join(run, cycle.strftime(dt_fmt))
 
-        if path.isfile(outfile) and len(open(outfile).readlines()) == length:
+        if path.isfile(outfile) and len(open(outfile).readlines()) == len(forecasts)+1:
             print(f'Skip "{outfile}"')
         else:
             print(f'Creating "{outfile}" ...', end='')

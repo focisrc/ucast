@@ -42,5 +42,6 @@ setup(
         'pandas>=1',
         'pygrib>=2.0.4',
         'requests>=2.21',
+        'tqdm>=4.40.2',
     ],
 )
