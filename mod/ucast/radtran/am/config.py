@@ -94,7 +94,7 @@ def config(gfs):
         raise ValueError("User-specified altitude exceeds top GFS level")
 
     # For pressure, height, and temperature, use the base values.
-    # The surface (last) value is interpolated with respect to z
+    # The surface (last) values are interpolated with respect to z
     n = np.argmax(gfs.z < z)
     u = (gfs.z[n-1]-z) / (gfs.z[n-1]-gfs.z[n])
 
@@ -108,7 +108,7 @@ def config(gfs):
     u = (gfs.P[n-1]-Pb[-1]) / (gfs.P[n-1]-gfs.P[n])
 
     T         = average(gfs.T,         n, u)
-    o3_vmr    = average(gfs.o3_mmr,    n, u) * (M_AIR/M_O3) # convert mass mixing ratio to volume mixing ratio
+    o3_mmr    = average(gfs.o3_mmr,    n, u)
     RH        = average(gfs.RH,        n, u)
     cloud_lmr = average(gfs.cloud_lmr, n, u)
     cloud_imr = average(gfs.cloud_imr, n, u)
@@ -120,6 +120,10 @@ def config(gfs):
     ctw = cloud_lmr * m
     cti = cloud_imr * m
 
+    # Convert mass mixing ratio to volume mixing ratio
+    o3_vmr = o3_mmr * (M_AIR/M_O3)
+
+    # Finally construct the configuration text
     l = [f"""#
 # Layer data below were derived from NCEP GFS model data obtained
 # from the NOAA Operational Model Archive Distribution System
