@@ -84,7 +84,7 @@ def delta(arr, n, u):
     arr = base(arr, n, u)
     return np.r_[0, arr[1:]-arr[:-1]]
 
-def config(gfs):
+def config(gfs, debug=False):
 
     p = f"{gfs.product:03d} hour forecast" if isinstance(gfs.product, int) else "analysis"
     z = gfs.site.alt
@@ -122,6 +122,17 @@ def config(gfs):
 
     # Convert mass mixing ratio to volume mixing ratio
     o3_vmr = o3_mmr * (M_AIR/M_O3)
+
+    # Dump arrays to debug
+    if debug:
+        import pandas as pd
+        loc = locals()
+        org = pd.DataFrame({k:getattr(gfs, k) for k in [
+            'P', 'z', 'T', 'o3_mmr', 'RH', 'cloud_lmr', 'cloud_imr']})
+        der = pd.DataFrame({k:loc[k] for k in [
+            'Pb', 'zb', 'Tb', 'T', 'o3_vmr', 'RH', 'cloud_lmr', 'cloud_imr', 'm', 'ctw', 'cti']})
+        org.to_csv('debug-org.csv', index=False)
+        der.to_csv('debug-der.csv', index=False)
 
     # Finally construct the configuration text
     l = [f"""#
