@@ -27,9 +27,13 @@ M_O3                = 47.997   # O3 mass [g / mole]
 H2O_SUPERCOOL_LIMIT = 238.     # Assume ice below this temperature [K]
 PASCAL_ON_MBAR      = 100.     # conversion from mbar (hPa) to Pa
 
+RH_TOP_PLEVEL = 29.
+STRAT_H2O_VMR = 5e-6
+
 def column(name, value):
     fu_map = {
         'o3 vmr'          :('.3e', ''        ),
+        'h2o vmr'         :('.3e', ''        ),
         'h2o RH'          :('.2f', '%'       ),
         'h2o RHi'         :('.2f', '%'       ),
         'lwp_abs_Rayleigh':('.3e', ' kg*m^-2'),
@@ -52,13 +56,21 @@ def layer(Pb, zb, Tb, T, o3_vmr, RH, ctw, cti):
         # low temperature.)
         h2o_label = "h2o RHi"
         ctw_label = "iwp_abs_Rayleigh"
+
+    if (Pb > RH_TOP_PLEVEL):
+        h2o_column = column(h2o_label, RH)
+    else:
+        # Above the level defined above, use a fixed stratospheric
+        # mixing ratio instead of RH from GFS.
+        h2o_column = column("h2o vmr", STRAT_H2O_VMR)
+
     return '\n'.join(filter(None, [
         "layer",
        f"Pbase {Pb:.1f} mbar  # {zb:.1f} m",
        f"Tbase {Tb:.1f} K",
         "column dry_air vmr",
         column("o3 vmr", o3_vmr),
-        column(h2o_label, RH),
+        h2o_column,
         column(ctw_label, ctw),
         column("iwp_abs_Rayleigh", cti),
     ]))
