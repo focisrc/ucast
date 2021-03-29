@@ -94,7 +94,7 @@ def average(arr, n, u):
 
 def delta(arr, n, u):
     arr = base(arr, n, u)
-    return np.r_[0, arr[1:]-arr[:-1]]
+    return np.r_[arr[0], arr[1:]-arr[:-1]]
 
 def config(gfs, debug=False):
 
