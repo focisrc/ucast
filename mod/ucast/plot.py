@@ -16,7 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
+
 from matplotlib import pyplot as plt
+from matplotlib import dates  as mdates
 
 def plot_latest(dfs, title=None, name=None, **kwargs):
 
@@ -28,12 +31,13 @@ def plot_latest(dfs, title=None, name=None, **kwargs):
         for j, ax in enumerate(axes):
             ax.plot(df.date, df.iloc[:,j+1],
                     alpha=alpha, linewidth=width, **kwargs)
-            ax.axvline(x=dfs[0].date[0], linestyle=':', color='k')
+            ax.axvline(x=datetime.utcnow(), linestyle=':', color='k')
 
-    columns = dfs[0].columns
     for j, ax in enumerate(axes):
+        ax.grid(alpha=0.25)
         ax.tick_params(axis='x',direction="in",top=True)
         ax.tick_params(axis='y',direction="in",right=True)
+        ax.xaxis.set_major_locator(mdates.DayLocator())
         ax.autoscale(enable=True, axis='x', tight=True)
 
     axes[0].set_ylabel(r'$\tau_{255}$',      fontsize=16)
@@ -76,12 +80,13 @@ def plot_sites(dfs, sites, title=None, name=None, **kwargs):
             kwa = kwargs
         for j, ax in enumerate(axes):
             ax.plot(df.date, df.iloc[:,j+1], label=sites[i], **kwargs)
-            ax.axvline(x=dfs[0].date[0], linestyle=':', color='k')
+            ax.axvline(x=datetime.utcnow(), linestyle=':', color='k')
 
-    columns = dfs[0].columns
     for j, ax in enumerate(axes):
+        ax.grid(alpha=0.25)
         ax.tick_params(axis='x',direction="in",top=True)
         ax.tick_params(axis='y',direction="in",right=True)
+        ax.xaxis.set_major_locator(mdates.DayLocator())
         ax.autoscale(enable=True, axis='x', tight=True)
 
     axes[0].set_ylabel(r'$\tau_{255}$',      fontsize=16)
