@@ -23,7 +23,7 @@ def plot_latest(dfs, title=None, name=None, **kwargs):
     fig, axes = plt.subplots(6, 1, figsize=(8,8), sharex=True)
 
     for i, df in enumerate(dfs):
-        alpha = 1.0 if i == 0 else (1 - i/len(dfs)) / 3
+        alpha = 1.0 if i == 0 else (1 - i/len(dfs)) / 5
         for j, ax in enumerate(axes):
             ax.plot(df.date, df.iloc[:,j+1], alpha=alpha, **kwargs)
 
@@ -32,7 +32,7 @@ def plot_latest(dfs, title=None, name=None, **kwargs):
         ax.tick_params(axis='x',direction="in",top=True)
         ax.tick_params(axis='y',direction="in",right=True)
 
-    axes[0].set_ylabel(r'$tau_{255}$')
+    axes[0].set_ylabel(r'$\tau_{255}$')
     axes[1].set_ylabel(r'$T_b$ [K]')
     axes[2].set_ylabel(r'pwv [mm]')
     axes[3].set_ylabel(r'lwp [kg m$^{-2}$]')
