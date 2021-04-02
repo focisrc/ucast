@@ -29,11 +29,11 @@ from ucast.io    import dt_fmt, save
 
 
 @click.command()
-@click.option("--lag",  default=5.2,  help="default lag")
-@click.option("--site", default='KP', help="Kitt Peak")
-@click.option("--run",  default='.',  help="Run directory")
-@click.option("--data", default=None, help="Data directory")
-def ucast(lag, site, run, data):
+@click.option("--lag",     default=5.2,  help="Lag hour for weather forecast.")
+@click.option("--site",    default='KP', help="Telescope site.")
+@click.option("--archive", default='.',  help="Archive data directory.")
+@click.option("--latest",  default=None, help="Latest data directory.")
+def ucast(lag, site, archive, latest):
     """µcast: micro-weather forecasting for astronomy"""
 
     site         = getattr(uc.site, site)
@@ -41,7 +41,7 @@ def ucast(lag, site, run, data):
 
     for hr_ago in range(0, 48+1, 6):
         cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
-        outfile = path.join(run, cycle.strftime(dt_fmt))
+        outfile = path.join(archive, cycle.strftime(dt_fmt))
 
         if path.isfile(outfile) and len(open(outfile).readlines()) == len(forecasts)+1:
             print(f'Skip "{outfile}"; ', end='')
@@ -50,11 +50,11 @@ def ucast(lag, site, run, data):
             save(outfile, mkdf(site, cycle))
             print(" DONE; ", end='')
 
-        if data is not None:
+        if latest is not None:
             target = "latest" if hr_ago == 0 else f"latest-{hr_ago:02d}"
             print(f'link as "{target}"')
             symlink(path.realpath(outfile),
-                    path.join(data, target))
+                    path.join(latest, target))
         else:
             print()
 
