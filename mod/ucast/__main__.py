@@ -25,7 +25,8 @@ import ucast as uc
 from ucast.utils import forced_symlink  as symlink
 from ucast.utils import ucast_dataframe as mkdf
 from ucast.utils import forecasts
-from ucast.io    import dt_fmt, save
+from ucast.io    import dt_fmt, save, read
+from ucast.plot  import plot_latest
 
 
 @click.command()
@@ -39,6 +40,7 @@ def ucast(lag, site, archive, latest):
     site         = getattr(uc.site, site)
     latest_cycle = uc.gfs.latest_cycle(lag=lag)
 
+    dfs = []
     for hr_ago in range(0, 48+1, 6):
         cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
         outfile = path.join(archive, cycle.strftime(dt_fmt))
@@ -50,13 +52,16 @@ def ucast(lag, site, archive, latest):
             save(outfile, mkdf(site, cycle))
             print(" DONE; ", end='')
 
-        if latest is not None:
+        if latest is None:
+            print()
+        else:
             target = "latest" if hr_ago == 0 else f"latest-{hr_ago:02d}"
             print(f'link as "{target}"')
             symlink(path.realpath(outfile),
                     path.join(latest, target))
-        else:
-            print()
+            dfs.append(read(target))
+
+    plot_latest(dfs, site, 'latest.png', color='k')
 
 
 if __name__ == "__main__":
