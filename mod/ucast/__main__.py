@@ -16,7 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from os import path
+from os   import path
+from glob import glob
 
 import requests
 import click
@@ -26,7 +27,7 @@ from ucast.utils import forced_symlink  as symlink
 from ucast.utils import ucast_dataframe as mkdf
 from ucast.utils import forecasts
 from ucast.io    import dt_fmt, save, read
-from ucast.plot  import plot_latest
+from ucast.plot  import plot_latest, plot_sites
 
 
 @click.group()
@@ -68,6 +69,20 @@ def mktab(lag, site, archive, latest):
 
     title = f'{site.name}: ({site.lat}, {site.lon}, {site.alt}) from {latest_cycle}'
     plot_latest(dfs, title, 'latest', color='k')
+
+
+@ucast.command()
+@click.argument("sites", nargs=-1)
+@click.option("--out", default='ucast', help="Output file name (no extension)")
+def mkplot(sites, out):
+    if len(sites) == 0:
+        sites = [p[:-7] for p in glob("*/latest")]
+        if len(sites) == 0:
+            print('Weather table not found.')
+            return 0
+
+    dfs = [read(f'{s}/latest') for s in sites]
+    plot_sites(dfs, sites, name=out)
 
 
 if __name__ == "__main__":
