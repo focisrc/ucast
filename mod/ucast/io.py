@@ -1,0 +1,28 @@
+# Copyright (C) 2021 Chi-kwan Chan
+# Copyright (C) 2021 Steward Observatory
+#
+# This file is part of `ucast`.
+#
+# `Ucast` is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# `Ucast` is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
+
+import numpy as np
+
+dt_fmt  = "%Y%m%d_%H:%M:%S"
+heading = "#            date       tau225        Tb[K]      pwv[mm] lwp[kg*m^-2] iwp[kg*m^-2]       o3[DU]\n"
+out_fmt = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
+
+def save(file, df):
+    with open(file, "w") as f:
+        f.write(heading)
+        np.savetxt(f, df.fillna(0).values, fmt=out_fmt)

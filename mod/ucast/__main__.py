@@ -18,17 +18,14 @@
 
 from os import path
 
-import numpy  as np
 import requests
 import click
 
 import ucast as uc
 from ucast.utils import forced_symlink  as symlink
 from ucast.utils import ucast_dataframe as mkdf
-from ucast.utils import dt_fmt, forecasts
-
-heading   = "#            date       tau225        Tb[K]      pwv[mm] lwp[kg*m^-2] iwp[kg*m^-2]       o3[DU]\n"
-out_fmt   = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
+from ucast.utils import forecasts
+from ucast.io    import dt_fmt, save
 
 
 @click.command()
@@ -50,10 +47,7 @@ def ucast(lag, site, run, data):
             print(f'Skip "{outfile}"')
         else:
             print(f'Creating "{outfile}" ...', end='')
-            df = mkdf(site, cycle)
-            with open(outfile, "w") as f:
-                f.write(heading)
-                np.savetxt(f, df.fillna(0).values, fmt=out_fmt)
+            save(outfile, mkdf(site, cycle))
             print(" DONE")
 
     if data is not None:

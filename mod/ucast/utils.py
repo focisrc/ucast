@@ -25,9 +25,9 @@ import pandas as pd
 from tqdm import tqdm
 
 import ucast  as uc
+from ucast.io import dt_fmt
 
 columns   = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
-dt_fmt    = "%Y%m%d_%H:%M:%S"
 forecasts = list(range(120+1)) + list(range(123, 384+1, 3))
 
 
