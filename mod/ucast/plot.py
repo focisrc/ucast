@@ -22,17 +22,29 @@ def plot_latest(dfs, title=None, name=None, **kwargs):
 
     fig, axes = plt.subplots(6, 1, figsize=(8,8), sharex=True)
 
-    columns = dfs[0].columns
-    for j, ax in enumerate(axes):
-        ax.tick_params(axis='x',direction="in",top=True)
-        ax.tick_params(axis='y',direction="in",right=True)
-        ax.set_ylabel(f'{columns[j+1]}')
-        #ax.grid(axis='y')
-
     for i, df in enumerate(dfs):
         alpha = 1.0 if i == 0 else (1 - i/len(dfs)) / 3
         for j, ax in enumerate(axes):
             ax.plot(df.date, df.iloc[:,j+1], alpha=alpha, **kwargs)
+
+    columns = dfs[0].columns
+    for j, ax in enumerate(axes):
+        ax.tick_params(axis='x',direction="in",top=True)
+        ax.tick_params(axis='y',direction="in",right=True)
+
+    axes[0].set_ylabel(r'$tau_{255}$')
+    axes[1].set_ylabel(r'$T_b$ [K]')
+    axes[2].set_ylabel(r'pwv [mm]')
+    axes[3].set_ylabel(r'lwp [kg m$^{-2}$]')
+    axes[4].set_ylabel(r'iwp [kg m$^{-2}$]')
+    axes[5].set_ylabel(r'o3 [DU]')
+
+    axes[0].set_ylim(0, 1.1)
+    axes[1].set_ylim(0, 330)
+    axes[2].set_ylim(0, 16.5)
+    axes[3].set_ylim(0, 2.2)
+    axes[4].set_ylim(0, 2.2)
+    axes[5].set_ylim(230, 450)
 
     if title is not None:
         axes[0].set_title(title)
