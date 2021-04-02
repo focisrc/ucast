@@ -16,10 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from os        import path
-from itertools import chain
-from datetime  import timedelta
-from tqdm      import tqdm
+from os       import path
+from datetime import timedelta
+from tqdm     import tqdm
 
 import numpy  as np
 import pandas as pd
