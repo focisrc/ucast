@@ -62,3 +62,53 @@ def plot_latest(dfs, title=None, name=None, **kwargs):
     if name is not None:
         fig.savefig(name+'.pdf')
         fig.savefig(name+'.png')
+
+
+def plot_sites(dfs, sites, title=None, name=None, **kwargs):
+
+    fig, axes = plt.subplots(6, 1, figsize=(12,12), sharex=True)
+
+    for i, df in enumerate(dfs):
+        if i == 0:
+            kwa = {**kwargs, 'color':'dimgray'}
+        else:
+            kwa = kwargs
+        for j, ax in enumerate(axes):
+            ax.plot(df.date, df.iloc[:,j+1], label=sites[i], **kwargs)
+            ax.axvline(x=dfs[0].date[0], linestyle=':', color='k')
+
+    columns = dfs[0].columns
+    for j, ax in enumerate(axes):
+        ax.tick_params(axis='x',direction="in",top=True)
+        ax.tick_params(axis='y',direction="in",right=True)
+        ax.autoscale(enable=True, axis='x', tight=True)
+
+    axes[0].set_ylabel(r'$\tau_{255}$',      fontsize=16)
+    axes[1].set_ylabel(r'$T_b$ [K]',         fontsize=16)
+    axes[2].set_ylabel(r'pwv [mm]',          fontsize=16)
+    axes[3].set_ylabel(r'lwp [kg m$^{-2}$]', fontsize=16)
+    axes[4].set_ylabel(r'iwp [kg m$^{-2}$]', fontsize=16)
+    axes[5].set_ylabel(r'o3 [DU]',           fontsize=16)
+
+    axes[0].set_ylim(0, 1.1)
+    axes[1].set_ylim(0, 330)
+    axes[2].set_ylim(0, 16.5)
+    axes[3].set_ylim(0, 2.2)
+    axes[4].set_ylim(0, 2.2)
+    axes[5].set_ylim(240, 460)
+
+    if title is not None:
+        axes[0].set_title(title, fontsize=16)
+
+    axes[4].legend(loc='upper right', bbox_to_anchor=(0.99,2))
+
+    axes[5].set_xlabel('Date', fontsize=16)
+    axes[5].set_xlim(dfs[-1].date[0], None)
+    plt.xticks(rotation=45, ha='right')
+
+    fig.tight_layout()
+    fig.subplots_adjust(wspace=0, hspace=0.05)
+
+    if name is not None:
+        fig.savefig(name+'.pdf')
+        fig.savefig(name+'.png')
