@@ -60,4 +60,5 @@ def plot_latest(dfs, title=None, name=None, **kwargs):
     fig.subplots_adjust(wspace=0, hspace=0.05)
 
     if name is not None:
-        fig.savefig(name)
+        fig.savefig(name+'.pdf')
+        fig.savefig(name+'.png')
