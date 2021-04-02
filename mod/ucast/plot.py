@@ -34,6 +34,7 @@ def plot_latest(dfs, title=None, name=None, **kwargs):
     for j, ax in enumerate(axes):
         ax.tick_params(axis='x',direction="in",top=True)
         ax.tick_params(axis='y',direction="in",right=True)
+        ax.autoscale(enable=True, axis='x', tight=True)
 
     axes[0].set_ylabel(r'$\tau_{255}$',      fontsize=16)
     axes[1].set_ylabel(r'$T_b$ [K]',         fontsize=16)
