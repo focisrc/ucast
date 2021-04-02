@@ -20,7 +20,13 @@ in your `$PATH`.
 After installation, one can simply `import ucast` to use µcast inside
 python.
 µcast also comes with a command line tool `ucast` to automatically
-pull GFS data and create a summary table of atmospheric properties.
+pull GFS data, create summary tables of atmospheric properties, and
+plot the results:
+
+    $ ucast mktab  KP --archive KP --latest KP # create summary table
+    $ ucast mkplot                             # create summary plot
+
+Use `ucast --help` to see the detailed usage.
 
 
 ## Backend Tools
