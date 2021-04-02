@@ -24,12 +24,12 @@ import time
 
 # GFS variables to be requested
 variables = (
-    "CLWMR", # Cloud liquid water mass mixing ratio [kg liquid / kg air]
-    "ICMR",  # Cloud ice mass mixing ratio [kg liquid / kg air]
     "HGT",   # Geopotential height [m]
+    "TMP",   # Temperature [K]
     "O3MR",  # Ozone mass mixing ratio [kg O3 / kg air]
     "RH",    # Relative Humidity [%]
-    "TMP",   # Temperature [K]
+    "CLWMR", # Cloud liquid water mass mixing ratio [kg liquid / kg air]
+    "ICMR",  # Cloud ice mass mixing ratio [kg liquid / kg air]
 )
 
 # GFS grid levels [mbar]
