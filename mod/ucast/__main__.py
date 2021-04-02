@@ -29,13 +29,18 @@ from ucast.io    import dt_fmt, save, read
 from ucast.plot  import plot_latest
 
 
-@click.command()
+@click.group()
+def ucast():
+    """µcast: micro-weather forecasting for astronomy"""
+
+
+@ucast.command()
 @click.option("--lag",     default=5.2,  help="Lag hour for weather forecast.")
 @click.option("--site",    default='KP', help="Telescope site.")
 @click.option("--archive", default='.',  help="Archive data directory.")
 @click.option("--latest",  default=None, help="Latest data directory.")
-def ucast(lag, site, archive, latest):
-    """µcast: micro-weather forecasting for astronomy"""
+def mktab(lag, site, archive, latest):
+    """Pull weather data from NOMADS, process with `am`, and make tables"""
 
     site         = getattr(uc.site, site)
     latest_cycle = uc.gfs.latest_cycle(lag=lag)
