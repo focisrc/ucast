@@ -20,25 +20,29 @@ from matplotlib import pyplot as plt
 
 def plot_latest(dfs, title=None, name=None, **kwargs):
 
-    fig, ax = plt.subplots(figsize=(10.5,4.5))
+    fig, axes = plt.subplots(6, 1, figsize=(8,8), sharex=True)
+
+    columns = dfs[0].columns
+    for j, ax in enumerate(axes):
+        ax.tick_params(axis='x',direction="in",top=True)
+        ax.tick_params(axis='y',direction="in",right=True)
+        ax.set_ylabel(f'{columns[j+1]}')
+        #ax.grid(axis='y')
 
     for i, df in enumerate(dfs):
         alpha = 1.0 if i == 0 else (1 - i/len(dfs)) / 3
-        ax.plot(df.date, df.tau, alpha=alpha, **kwargs)
-
-    ax.set_xlabel('Date')
-    ax.set_ylabel(r'$\tau_{255}$')
-
-    ax.set_xlim(dfs[-1].date[0], None)
-    ax.set_ylim(0, None)
-
-    ax.grid(axis='y')
-    plt.xticks(rotation=45, ha='right')
+        for j, ax in enumerate(axes):
+            ax.plot(df.date, df.iloc[:,j+1], alpha=alpha, **kwargs)
 
     if title is not None:
-        ax.set_title(title)
+        axes[0].set_title(title)
+
+    axes[5].set_xlabel('Date')
+    axes[5].set_xlim(dfs[-1].date[0], None)
+    plt.xticks(rotation=45, ha='right')
 
     fig.tight_layout()
+    fig.subplots_adjust(wspace=0, hspace=0.05)
 
     if name is not None:
         fig.savefig(name)
