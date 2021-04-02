@@ -78,7 +78,8 @@ def ucast(lag, site, run, data):
                 np.savetxt(f, df.fillna(0).values, fmt=out_fmt)
             print(" DONE")
 
-        if data is not None:
+    if data is not None:
+        for hr_ago in range(0, 48+1, 6):
             target="latest" if hr_ago == 0 else f"latest-{hr_ago:02d}"
             symlink(path.realpath(outfile),
                     path.join(data, target))
