@@ -16,8 +16,39 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from random import randrange
-from os     import symlink, rename
+from random   import randrange
+from os       import symlink, rename
+from datetime import timedelta
+
+import requests
+import pandas as pd
+from tqdm import tqdm
+
+import ucast  as uc
+
+columns   = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
+dt_fmt    = "%Y%m%d_%H:%M:%S"
+forecasts = list(range(120+1)) + list(range(123, 384+1, 3))
+
+
+am = uc.am.AM()
+
+
+def ucast_dataframe(site, cycle):
+    df = pd.DataFrame(columns=columns)
+
+    for hr_forecast in tqdm(forecasts, desc=cycle.strftime(dt_fmt)):
+        try:
+            gfs = uc.gfs.GFS(site, cycle, hr_forecast)
+        except requests.exceptions.RetryError as e:
+            continue # skip a row
+
+        sol  = am.solve(gfs)
+        date = (gfs.cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
+        df   = df.append({'date':date, **sol}, ignore_index=True)
+
+    return df
+
 
 def forced_symlink(src, dst):
     r   = randrange(1000)

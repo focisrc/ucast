@@ -16,40 +16,19 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from os       import path
-from datetime import timedelta
-from tqdm     import tqdm
+from os import path
 
 import numpy  as np
-import pandas as pd
 import requests
 import click
 
 import ucast as uc
-from ucast.utils import forced_symlink as symlink
+from ucast.utils import forced_symlink  as symlink
+from ucast.utils import ucast_dataframe as mkdf
+from ucast.utils import dt_fmt, forecasts
 
-columns   = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
-dt_fmt    = "%Y%m%d_%H:%M:%S"
-forecasts = list(range(120+1)) + list(range(123, 384+1, 3))
 heading   = "#            date       tau225        Tb[K]      pwv[mm] lwp[kg*m^-2] iwp[kg*m^-2]       o3[DU]\n"
 out_fmt   = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
-
-am = uc.am.AM()
-
-def mktable(site, cycle):
-    df = pd.DataFrame(columns=columns)
-
-    for hr_forecast in tqdm(forecasts, desc=cycle.strftime(dt_fmt)):
-        try:
-            gfs = uc.gfs.GFS(site, cycle, hr_forecast)
-        except requests.exceptions.RetryError as e:
-            continue # skip a row
-
-        sol  = am.solve(gfs)
-        date = (gfs.cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
-        df   = df.append({'date':date, **sol}, ignore_index=True)
-
-    return df
 
 
 @click.command()
@@ -71,7 +50,7 @@ def ucast(lag, site, run, data):
             print(f'Skip "{outfile}"')
         else:
             print(f'Creating "{outfile}" ...', end='')
-            df = mktable(site, cycle)
+            df = mkdf(site, cycle)
             with open(outfile, "w") as f:
                 f.write(heading)
                 np.savetxt(f, df.fillna(0).values, fmt=out_fmt)
