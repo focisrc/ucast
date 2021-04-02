@@ -75,6 +75,8 @@ def mktab(lag, site, archive, latest):
 @click.argument("sites", nargs=-1)
 @click.option("--out", default='ucast', help="Output file name (no extension)")
 def mkplot(sites, out):
+    """Read weather tables from the directories SITES and create a summary plot"""
+
     if len(sites) == 0:
         sites = [p[:-7] for p in glob("*/latest")]
         if len(sites) == 0:
