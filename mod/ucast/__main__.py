@@ -35,12 +35,12 @@ def ucast():
 
 
 @ucast.command()
+@click.argument("site")
 @click.option("--lag",     default=5.2,  help="Lag hour for weather forecast.")
-@click.option("--site",    default='KP', help="Telescope site.")
 @click.option("--archive", default='.',  help="Archive data directory.")
 @click.option("--latest",  default=None, help="Latest data directory.")
 def mktab(lag, site, archive, latest):
-    """Pull weather data from NOMADS, process with `am`, and make tables"""
+    """Pull weather data for telescope SITE, process with `am`, and make tables"""
 
     site         = getattr(uc.site, site)
     latest_cycle = uc.gfs.latest_cycle(lag=lag)
