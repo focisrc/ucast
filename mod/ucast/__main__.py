@@ -62,7 +62,7 @@ def ucast(lag, site, archive, latest):
             dfs.append(read(target))
 
     title = f'{site.name}: ({site.lat}, {site.lon}, {site.alt}) from {latest_cycle}'
-    plot_latest(dfs, title, 'latest.png', color='k')
+    plot_latest(dfs, title, 'latest.pdf', color='k')
 
 
 if __name__ == "__main__":
