@@ -44,17 +44,19 @@ def ucast(lag, site, run, data):
         outfile = path.join(run, cycle.strftime(dt_fmt))
 
         if path.isfile(outfile) and len(open(outfile).readlines()) == len(forecasts)+1:
-            print(f'Skip "{outfile}"')
+            print(f'Skip "{outfile}"; ', end='')
         else:
             print(f'Creating "{outfile}" ...', end='')
             save(outfile, mkdf(site, cycle))
-            print(" DONE")
+            print(" DONE; ", end='')
 
-    if data is not None:
-        for hr_ago in range(0, 48+1, 6):
-            target="latest" if hr_ago == 0 else f"latest-{hr_ago:02d}"
+        if data is not None:
+            target = "latest" if hr_ago == 0 else f"latest-{hr_ago:02d}"
+            print(f'link as "{target}"')
             symlink(path.realpath(outfile),
                     path.join(data, target))
+        else:
+            print()
 
 
 if __name__ == "__main__":
