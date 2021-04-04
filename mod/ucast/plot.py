@@ -17,6 +17,7 @@
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
+from os.path  import splitext
 
 from matplotlib import pyplot as plt
 from matplotlib import dates  as mdates
@@ -65,8 +66,12 @@ def plot_latest(dfs, title=None, name=None, **kwargs):
     fig.subplots_adjust(wspace=0, hspace=0.05)
 
     if name is not None:
-        fig.savefig(name+'.pdf')
-        fig.savefig(name+'.png')
+        _, ext = splitext(name)
+        if ext[1:] in plt.gcf().canvas.get_supported_filetypes():
+            fig.savefig(name)
+        else:
+            fig.savefig(name+'.pdf')
+            fig.savefig(name+'.png')
 
 
 def plot_sites(dfs, sites, title=None, name=None, **kwargs):
@@ -116,5 +121,9 @@ def plot_sites(dfs, sites, title=None, name=None, **kwargs):
     fig.subplots_adjust(wspace=0, hspace=0.05)
 
     if name is not None:
-        fig.savefig(name+'.pdf')
-        fig.savefig(name+'.png')
+        _, ext = splitext(name)
+        if ext[1:] in plt.gcf().canvas.get_supported_filetypes():
+            fig.savefig(name)
+        else:
+            fig.savefig(name+'.pdf')
+            fig.savefig(name+'.png')
