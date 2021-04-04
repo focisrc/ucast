@@ -17,7 +17,7 @@
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
 from random   import randrange
-from os       import symlink, rename
+from os       import symlink, rename, path
 from datetime import timedelta
 
 import requests
@@ -51,7 +51,7 @@ def ucast_dataframe(site, cycle):
 
 
 def forced_symlink(src, dst):
-    r   = randrange(1000)
-    tmp = f"{dst}-{r:03d}"
-    symlink(src, tmp)
+    r   = randrange(1000000)
+    tmp = f"{dst}-tmp{r:06d}"
+    symlink(path.relpath(src, path.dirname(tmp)), tmp)
     rename(tmp, dst)
