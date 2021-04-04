@@ -62,10 +62,10 @@ def mktab(lag, site, data, link, plot):
         if link is None:
             print()
         else:
-            target = "latest" if hr_ago == 0 else f"latest-{hr_ago:02d}"
+            target = path.join(link,
+                "latest" if hr_ago == 0 else f"latest-{hr_ago:02d}")
             print(f'link as "{target}"')
-            symlink(path.realpath(outfile),
-                    path.join(link, target))
+            symlink(path.realpath(outfile), target)
             dfs.append(read(target))
 
     if link is not None and plot is not None:
