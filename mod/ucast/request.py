@@ -22,7 +22,7 @@ import requests
 
 # Timeouts and retries
 CONN_TIMEOUT        = 6   # Initial server response timeout in seconds
-READ_TIMEOUT        = 6   # Stalled download timeout in seconds
+READ_TIMEOUT        = 18  # Stalled download timeout in seconds
 RETRY_DELAY         = 60  # Delay before retry (NOAA requests 60 s)
 MAX_DOWNLOAD_TRIES  = 5
 
