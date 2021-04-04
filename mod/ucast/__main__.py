@@ -37,10 +37,11 @@ def ucast():
 
 @ucast.command()
 @click.argument("site")
-@click.option("--lag",     default=5.2, help="Lag hour for weather forecast.")
-@click.option("--archive", default='.', help="Data archive directory.")
-@click.option("--link",    default='.', help="Directory contains links to the latest data.")
-def mktab(lag, site, archive, link):
+@click.option("--lag",     default=5.2,      help="Lag hour for weather forecast.")
+@click.option("--archive", default='.',      help="Data archive directory.")
+@click.option("--link",    default='.',      help="Directory contains links to the latest data.")
+@click.option("--plot",    default='latest', help="File name of the plot.")
+def mktab(lag, site, archive, link, plot):
     """Pull weather data for telescope SITE, process with `am`, and make tables"""
 
     site         = getattr(uc.site, site)
@@ -67,8 +68,9 @@ def mktab(lag, site, archive, link):
                     path.join(link, target))
             dfs.append(read(target))
 
-    title = f'{site.name}: ({site.lat}, {site.lon}, {site.alt}) from {latest_cycle}'
-    plot_latest(dfs, title, 'latest', color='k')
+    if link is not None and plot is not None:
+        title = f'{site.name}: ({site.lat}, {site.lon}, {site.alt}) from {latest_cycle}'
+        plot_latest(dfs, title, plot, color='k')
 
 
 @ucast.command()
