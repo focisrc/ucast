@@ -37,11 +37,11 @@ def ucast():
 
 @ucast.command()
 @click.argument("site")
-@click.option("--lag",     default=5.2,      help="Lag hour for weather forecast.")
-@click.option("--archive", default='.',      help="Data archive directory.")
-@click.option("--link",    default='.',      help="Directory contains links to the latest data.")
-@click.option("--plot",    default='latest', help="File name of the plot; inside `link` if '/' is not in the name.")
-def mktab(lag, site, archive, link, plot):
+@click.option("--lag",  default=5.2,      help="Lag hour for weather forecast.")
+@click.option("--data", default='.',      help="Data archive directory.")
+@click.option("--link", default='.',      help="Directory contains links to the latest data.")
+@click.option("--plot", default='latest', help="File name of the plot; inside `link` if '/' is not in the name.")
+def mktab(lag, site, data, link, plot):
     """Pull weather data for telescope SITE, process with `am`, and make tables"""
 
     site         = getattr(uc.site, site)
@@ -50,7 +50,7 @@ def mktab(lag, site, archive, link, plot):
     dfs = []
     for hr_ago in range(0, 48+1, 6):
         cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
-        outfile = path.join(archive, cycle.strftime(dt_fmt))
+        outfile = path.join(data, cycle.strftime(dt_fmt))
 
         if path.isfile(outfile) and len(open(outfile).readlines()) == len(forecasts)+1:
             print(f'Skip "{outfile}"; ', end='')
