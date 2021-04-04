@@ -23,10 +23,11 @@ python.
 pull GFS data, create summary tables of atmospheric properties, and
 plot the results:
 
-    $ ucast mktab  KP --archive KP --latest KP # create summary table
-    $ ucast mkplot                             # create summary plot
+    $ ucast mktab  KP --data KP --link KP # create summary table
+    $ ucast mkplot                        # create summary plot
 
-Use `ucast --help` to see the detailed usage.
+Use `ucast mktab --help` or `ucast mkplot --help` to see the detailed
+usages.
 
 
 ## Backend Tools
