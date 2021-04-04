@@ -40,7 +40,7 @@ def ucast():
 @click.option("--lag",     default=5.2,      help="Lag hour for weather forecast.")
 @click.option("--archive", default='.',      help="Data archive directory.")
 @click.option("--link",    default='.',      help="Directory contains links to the latest data.")
-@click.option("--plot",    default='latest', help="File name of the plot.")
+@click.option("--plot",    default='latest', help="File name of the plot; inside `link` if '/' is not in the name.")
 def mktab(lag, site, archive, link, plot):
     """Pull weather data for telescope SITE, process with `am`, and make tables"""
 
@@ -70,6 +70,8 @@ def mktab(lag, site, archive, link, plot):
 
     if link is not None and plot is not None:
         title = f'{site.name}: ({site.lat}, {site.lon}, {site.alt}) from {latest_cycle}'
+        if '/' not in plot:
+            plot = path.join(link, plot)
         plot_latest(dfs, title, plot, color='k')
 
 
