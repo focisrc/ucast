@@ -43,5 +43,6 @@ setup(
         'pygrib>=2.0.4',
         'requests>=2.24.0',
         'tqdm>=4.46.1',
+        'bokeh>=2.3.0'
     ],
 )
