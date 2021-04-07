@@ -96,7 +96,7 @@ def mkplot(sites, out):
 @click.option("--data", default='.',      help="Data archive directory.")
 @click.option("--version",default="latest", help="version of dataset. Eg : latest, latest-06...")
 def mkbokeh(data,version):
-    """ Creates a bokeh html file containing forecast of all sites"""
+    """ Creates a bokeh html file containing forecast of all sites."""
     bokeh_static(data,version)
  
     
