@@ -25,6 +25,7 @@ plot the results:
 
     $ ucast mktab  KP --data KP --link KP # create summary table
     $ ucast mkplot                        # create summary plot
+    $ ucast mkbokeh --data . --version latest # Create bokeh plot
 
 Use `ucast mktab --help` or `ucast mkplot --help` to see the detailed
 usages.
