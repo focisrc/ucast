@@ -28,6 +28,7 @@ from ucast.utils import ucast_dataframe as mkdf
 from ucast.utils import forecasts
 from ucast.io    import dt_fmt, save, read
 from ucast.plot  import plot_latest, plot_sites
+from ucast.bokehplot import bokeh_static
 
 
 @click.group()
@@ -89,6 +90,18 @@ def mkplot(sites, out):
 
     dfs = [read(f'{s}/latest') for s in sites]
     plot_sites(dfs, sites, name=out)
+
+
+@ucast.command()
+@click.option("--data", default='.',      help="Data archive directory.")
+@click.option("--version",default="latest", help="version of dataset. Eg : latest, latest-06...")
+def mkbokeh(data,version):
+    """ Creates a bokeh html file containing forecast of all sites."""
+    bokeh_static(data,version)
+ 
+    
+    
+    
 
 
 if __name__ == "__main__":
