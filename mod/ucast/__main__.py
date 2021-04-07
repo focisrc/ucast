@@ -93,7 +93,7 @@ def mkplot(sites, out):
     plot_sites(dfs, sites, name=out)
 
 
-@click.command()
+@ucast.command()
 @click.option("--data", default='.',      help="Data archive directory.")
 @click.option("--version",default="latest", help="version of dataset. Eg : latest, latest-06...")
 def mkbokeh(data,version):
