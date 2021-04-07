@@ -1,3 +1,8 @@
+import pandas as pd, matplotlib.pyplot as plt, numpy as np
+from bokeh.plotting import figure, output_file, show
+from bokeh.models import Range1d,Column
+
+
 def bokeh_static(): 
     names="date,tau225,Tb[K],pwv[mm],lwp[kg*m^-2],iwp[kg*m^-2],o3[DU]".split(",")
     sites=["ALMA", "APEX", "GLT", "JCMT", "KP", "LMT", "PDB", "PV", "SMA", "SMT", "SPT"]
