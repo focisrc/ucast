@@ -78,7 +78,7 @@ def mktab(lag, site, data, link):
 
 @ucast.command()
 @click.argument("site")
-@click.option("--link", default=None, help="Data archive directory.")
+@click.option("--link", default=None, help="Directory with latest links.")
 @click.option("--out",  default=None, help="File name of the plot.")
 def psite(site, link, out):
     """Read weather tables from SITE and create summary plot for one site"""
@@ -107,7 +107,7 @@ def psite(site, link, out):
 
 @ucast.command()
 @click.argument("sites", nargs=-1)
-@click.option("--link", default=None, help="Data archive directory.")
+@click.option("--link", default=None, help="Directory with latest links.")
 @click.option("--out",  default=None, help="File name of the plot.")
 def pall(sites, link, out):
     """Read weather tables from SITES and create summary plot for all sites"""
