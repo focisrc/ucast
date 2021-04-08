@@ -1,19 +1,11 @@
-from ucast.io import read_tsv as read
-
 from bokeh.models import Range1d, Column
-import pandas as pd
 from bokeh.plotting import figure, output_file, show
 
-def bokeh_static(link, input):
-    # All the relevant variables to be plotted.
-    sites  = ["ALMA", "APEX", "GLT", "JCMT", "KP",
-              "LMT", "PDB", "PV", "SMA", "SMT", "SPT"]
+def bokeh_static(dfs, sites, fname):
     colors = ['navy', 'red', 'blue', 'green', 'pink', 'purple',
               'violet', 'darkcyan', 'royalblue', 'seagreen', 'gold']
-    # Read files
-    dfs = [read(f'{link}/{s}/{input}') for s in sites]
 
-    output_file("forecast.html")
+    output_file(fname+'.html')
     plot_list = [create_plot(var, dfs, colors, sites)
                  for var in "tau,pwv,lwp,iwp".split(",")]
     p = Column(*plot_list)

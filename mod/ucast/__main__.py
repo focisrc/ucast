@@ -108,41 +108,59 @@ def psite(site, link, out):
 @ucast.command()
 @click.argument("sites", nargs=-1)
 @click.option("--link", default=None, help="Directory with latest links.")
+@click.option("--set",  default=None, help="Input dataset, e.g. latest, latest-06, ...")
 @click.option("--out",  default=None, help="File name of the plot.")
-def pall(sites, link, out):
+def pall(sites, link, set, out):
     """Read weather tables from SITES and create summary plot for all sites"""
 
     if link is None:
         link = '.'
 
+    if set is None:
+        set = 'latest'
+
     if out is None:
-        out = path.join(link, 'all')
+        out = path.join(link, set)
     elif '/' not in out:
         out = path.join(link, out)
 
     if len(sites) == 0:
-        sites = [p[:-11] for p in glob(path.join(link, "*", "latest.tsv"))]
+        sites = [p[:-11] for p in glob(path.join(link, "*", set+'.tsv'))]
         if len(sites) == 0:
             print('Weather table not found.')
             return 0
 
-    dfs = [read(f'{s}/latest.tsv') for s in sites]
+    dfs = [read(f'{s}/{set}.tsv') for s in sites]
     plot_all(dfs, sites, fname=out)
 
 
 @ucast.command()
-@click.option("--link",  default=None, help="Directory with latest links.")
-@click.option("--input", default=None, help="Input dataset, e.g. latest, latest-06, ...")
-def vis(link, input):
+@click.argument("sites", nargs=-1)
+@click.option("--link", default=None, help="Directory with latest links.")
+@click.option("--set",  default=None, help="Input dataset, e.g. latest, latest-06, ...")
+@click.option("--out",  default=None, help="File name of the plot.")
+def vis(sites, link, set, out):
     """ Creates a bokeh html file containing forecast of all sites."""
 
     if link is None:
         link = '.'
 
-    if input is None:
-        input = 'latest.tsv'
+    if set is None:
+        set = 'latest'
 
-    bokeh_static(link, input)
+    if out is None:
+        out = path.join(link, set)
+    elif '/' not in out:
+        out = path.join(link, out)
+
+    if len(sites) == 0:
+        sites = [p[:-11] for p in glob(path.join(link, "*", set+'.tsv'))]
+        if len(sites) == 0:
+            print('Weather table not found.')
+            return 0
+
+    dfs = [read(f'{s}/{set}.tsv') for s in sites]
+    bokeh_static(dfs, sites, fname=out)
 
 
 if __name__ == "__main__":
