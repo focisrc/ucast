@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
-from os   import path
-from glob import glob
+from os       import path
+from glob     import glob
+from datetime import datetime
 
 import requests
 import click
@@ -29,7 +30,7 @@ from ucast.utils import forecasts, valid
 from ucast.io    import dt_fmt
 from ucast.io    import save_tsv as save
 from ucast.io    import read_tsv as read
-from ucast.plot  import plot_latest, plot_sites
+from ucast.plot  import plot_site, plot_all
 from ucast.bokehplot import bokeh_static
 
 
@@ -76,11 +77,23 @@ def mktab(lag, site, data, link):
 
 
 @ucast.command()
-@click.argument("sites", nargs=-1)
-@click.option("--out", default='ucast', help="Output file name (no extension)")
-@click.option("--plot", default='latest', help="File name of the plot; inside `link` if '/' is not in the name.")
-def mkplot(sites, out, plot):
-    """Read weather tables from the directories SITES and create a summary plot"""
+@click.argument("site")
+@click.option("--link", default=None, help="Data archive directory.")
+@click.option("--out",  default=None, help="File name of the plot.")
+def psite(site, link, out):
+    """Read weather tables from SITE and create summary plot for one site"""
+
+    if link is None:
+        link = site if path.isdir(site) else '.'
+
+    if out is None:
+        out = path.join(link, 'latest')
+    elif '/' not in out:
+        out = path.join(link, out)
+
+    site         = getattr(uc.site, site)
+    latest_fname = path.basename(path.realpath(path.join(link, "latest.tsv")))
+    latest_cycle = datetime.strptime(path.splitext(latest_fname)[0], dt_fmt)
 
     dfs = []
     for hr_ago in range(0, 48+1, 6):
@@ -88,20 +101,33 @@ def mkplot(sites, out, plot):
             "latest.tsv" if hr_ago == 0 else f"latest-{hr_ago:02d}.tsv")
         dfs.append(read(target))
 
-    if link is not None and plot is not None:
-        title = f'{site.name}: ({site.lat}, {site.lon}, {site.alt}) from {latest_cycle}'
-        if '/' not in plot:
-            plot = path.join(link, plot)
-        plot_latest(dfs, title, plot, color='k')
+    title = f'{site.name}: ({site.lat},{site.lon},{site.alt})@{latest_cycle}'
+    plot_site(dfs, title, fname=out, color='k')
+
+
+@ucast.command()
+@click.argument("sites", nargs=-1)
+@click.option("--link", default=None, help="Data archive directory.")
+@click.option("--out",  default=None, help="File name of the plot.")
+def pall(sites, link, out):
+    """Read weather tables from SITES and create summary plot for all sites"""
+
+    if link is None:
+        link = '.'
+
+    if out is None:
+        out = path.join(link, 'all')
+    elif '/' not in out:
+        out = path.join(link, out)
 
     if len(sites) == 0:
-        sites = [p[:-7] for p in glob("*/latest")]
+        sites = [p[:-11] for p in glob(path.join(link, "*", "latest.tsv"))]
         if len(sites) == 0:
             print('Weather table not found.')
             return 0
 
-    dfs = [read(f'{s}/latest') for s in sites]
-    plot_sites(dfs, sites, name=out)
+    dfs = [read(f'{s}/latest.tsv') for s in sites]
+    plot_all(dfs, sites, fname=out)
 
 
 @ucast.command()

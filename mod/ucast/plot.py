@@ -22,7 +22,7 @@ from os.path  import splitext
 from matplotlib import pyplot as plt
 from matplotlib import dates  as mdates
 
-def plot_latest(dfs, title=None, name=None, **kwargs):
+def plot_site(dfs, title=None, fname=None, **kwargs):
 
     fig, axes = plt.subplots(6, 1, figsize=(12,12), sharex=True)
 
@@ -65,16 +65,16 @@ def plot_latest(dfs, title=None, name=None, **kwargs):
     fig.tight_layout()
     fig.subplots_adjust(wspace=0, hspace=0.05)
 
-    if name is not None:
-        _, ext = splitext(name)
+    if fname is not None:
+        _, ext = splitext(fname)
         if ext[1:] in plt.gcf().canvas.get_supported_filetypes():
-            fig.savefig(name)
+            fig.savefig(fname)
         else:
-            fig.savefig(name+'.pdf')
-            fig.savefig(name+'.png')
+            fig.savefig(fname+'.pdf')
+            fig.savefig(fname+'.png')
 
 
-def plot_sites(dfs, sites, title=None, name=None, **kwargs):
+def plot_all(dfs, sites, title=None, fname=None, **kwargs):
 
     fig, axes = plt.subplots(6, 1, figsize=(12,12), sharex=True)
 
@@ -120,10 +120,10 @@ def plot_sites(dfs, sites, title=None, name=None, **kwargs):
     fig.tight_layout()
     fig.subplots_adjust(wspace=0, hspace=0.05)
 
-    if name is not None:
-        _, ext = splitext(name)
+    if fname is not None:
+        _, ext = splitext(fname)
         if ext[1:] in plt.gcf().canvas.get_supported_filetypes():
-            fig.savefig(name)
+            fig.savefig(fname)
         else:
-            fig.savefig(name+'.pdf')
-            fig.savefig(name+'.png')
+            fig.savefig(fname+'.pdf')
+            fig.savefig(fname+'.png')
