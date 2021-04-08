@@ -20,7 +20,8 @@ def bokeh_static(dfs, sites, fname):
     show(Column(*plots))
 
 def create_plot(var, dfs, sites, **kwargs):
-    p = figure(title=var, plot_width=1600, plot_height=500, x_axis_type="datetime",
+    p = figure(title=var, x_axis_type="datetime",
+               plot_width=1600, plot_height=500 if var == "tau" else 300,
                tools="pan,box_zoom,box_select,lasso_select,undo,wheel_zoom,redo,reset,save".split(),
                **kwargs)
     if var == "tau":
@@ -33,8 +34,9 @@ def create_plot(var, dfs, sites, **kwargs):
         p.y_range = Range1d(0, 2)
     for i, (df, c) in enumerate(zip(dfs, colors)):
         p.line(df['date'], df[var].fillna(0),
-               color=c, legend_label=sites[i])
+               color=c, legend_label=sites[i],
+               alpha=1, muted_alpha=0.5)
     # Enable line hide toggle
-    p.legend.location = "top_left"
-    p.legend.click_policy = "hide"
+    p.legend.location = "top_right"
+    p.legend.click_policy = "mute"
     return p
