@@ -57,7 +57,7 @@ def mktab(lag, site, data, link):
 
     for hr_ago in range(0, 48+1, 6):
         cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
-        outfile = path.join(data, cycle.strftime(dt_fmt))
+        outfile = path.join(data, cycle.strftime(dt_fmt)+'.tsv')
 
         if valid(outfile):
             print(f'Skip "{outfile}"; ', end='')
@@ -70,7 +70,7 @@ def mktab(lag, site, data, link):
             print()
         else:
             target = path.join(link,
-                "latest" if hr_ago == 0 else f"latest-{hr_ago:02d}")
+                "latest.tsv" if hr_ago == 0 else f"latest-{hr_ago:02d}.tsv")
             print(f'link as "{target}"')
             symlink(outfile, target)
 
@@ -85,7 +85,7 @@ def mkplot(sites, out, plot):
     dfs = []
     for hr_ago in range(0, 48+1, 6):
         target = path.join(link,
-            "latest" if hr_ago == 0 else f"latest-{hr_ago:02d}")
+            "latest.tsv" if hr_ago == 0 else f"latest-{hr_ago:02d}.tsv")
         dfs.append(read(target))
 
     if link is not None and plot is not None:
