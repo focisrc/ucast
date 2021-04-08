@@ -26,7 +26,9 @@ import ucast as uc
 from ucast.utils import forced_symlink  as symlink
 from ucast.utils import ucast_dataframe as mkdf
 from ucast.utils import forecasts, valid
-from ucast.io    import dt_fmt, save, read
+from ucast.io    import dt_fmt
+from ucast.io    import save_csv as save
+from ucast.io    import read_csv as read
 from ucast.plot  import plot_latest, plot_sites
 from ucast.bokehplot import bokeh_static
 

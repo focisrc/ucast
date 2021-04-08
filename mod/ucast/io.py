@@ -24,12 +24,20 @@ heading = "#            date       tau225        Tb[K]      pwv[mm] lwp[kg*m^-2]
 out_fmt = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
 dt_fmt  = "%Y%m%d_%H:%M:%S"
 
-def save(file, df):
+
+def save_txt(file, df):
     with open(file, "w") as f:
         f.write(heading)
         np.savetxt(f, df.fillna(0).values, fmt=out_fmt)
 
-def read(file):
+def read_txt(file):
     d = pd.read_csv(file, delim_whitespace=True, skiprows=1, names=names)
     d.date = pd.to_datetime(d.date, format=dt_fmt)
     return d
+
+
+def save_csv(file, df):
+    df.to_csv(file, index=False)
+
+def read_csv(file):
+    return pd.read_csv(file)
