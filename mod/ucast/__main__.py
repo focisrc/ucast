@@ -41,11 +41,16 @@ def ucast():
 
 @ucast.command()
 @click.argument("site")
-@click.option("--lag",  default=5.25, help="Lag hour for weather forecast.")
-@click.option("--data", default=None, help="Data archive directory.")
-@click.option("--link", default=None, help="Directory with latest links.")
-def mktab(lag, site, data, link):
+@click.option("--lag",     default=5.25,  help="Lag hour for weather forecast.")
+@click.option("--data",    default=None,  help="Data archive directory.")
+@click.option("--link",    default=None,  help="Directory with latest links.")
+@click.option("--no-link", default=False, help="Disable latest links.", is_flag=True)
+def mktab(lag, site, data, link, no_link):
     """Pull weather for telescope SITE, process with `am`, and make tables """
+
+    if no_link and link is not None:
+        raise click.UsageError(
+            '"--link" should not be specified if "--no-link" is set')
 
     if data is None:
         data = site if path.isdir(site) else '.'
@@ -61,18 +66,18 @@ def mktab(lag, site, data, link):
         outfile = path.join(data, cycle.strftime(dt_fmt)+'.tsv')
 
         if valid(outfile):
-            print(f'Skip "{outfile}"; ', end='')
+            print(f'Skip "{outfile}"', end='')
         else:
             print(f'Creating "{outfile}" ...', end='')
             save(outfile, mkdf(site, cycle))
-            print(" DONE; ", end='')
+            print(" DONE", end='')
 
-        if link is None:
+        if no_link:
             print()
         else:
             target = path.join(link,
                 "latest.tsv" if hr_ago == 0 else f"latest-{hr_ago:02d}.tsv")
-            print(f'link as "{target}"')
+            print(f'; link as "{target}"')
             symlink(outfile, target)
 
 
