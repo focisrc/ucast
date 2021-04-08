@@ -77,8 +77,49 @@ def mktab(lag, site, data, link, no_link):
         else:
             target = path.join(link,
                 "latest.tsv" if hr_ago == 0 else f"latest-{hr_ago:02d}.tsv")
-            print(f'; link as "{target}"')
+            print(f'; linked as "{target}"')
             symlink(outfile, target)
+
+
+@ucast.command()
+@click.argument("site")
+@click.option("--no-lag",  default=False, help="Do not use current time to name links.", is_flag=True)
+@click.option("--lag",     default=None,  help="Lag hour for weather forecast.")
+@click.option("--data",    default=None,  help="Data archive directory.")
+@click.option("--link",    default=None,  help="Directory with latest links.")
+def link(lag, no_lag, site, data, link):
+    """(Re)link weather forecast tables"""
+
+    if no_lag and lag is not None:
+        raise click.UsageError(
+            '"--lag" should not be specified if "--no-lag" is set')
+    if lag is None:
+        lag = 5.25
+
+    if data is None:
+        data = site if path.isdir(site) else '.'
+
+    if link is None:
+        link = data
+
+    if no_lag:
+        pattern = path.join(link, '????-??-??_??.??.??.tsv')
+        sites = [p.split(path.sep)[-2] for p in sorted(glob(pattern))]
+
+    else:
+        latest_cycle = uc.gfs.latest_cycle(lag=lag)
+
+    for hr_ago in range(0, 48+1, 6):
+        cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
+        outfile = path.join(data, cycle.strftime(dt_fmt)+'.tsv')
+
+        if valid(outfile):
+            target = path.join(link,
+                "latest.tsv" if hr_ago == 0 else f"latest-{hr_ago:02d}.tsv")
+            print(f'"{outfile}" linked as "{target}"')
+            symlink(outfile, target)
+        else:
+            print(f'"{outfile}" is missing; skipped')
 
 
 @ucast.command()
