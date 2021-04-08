@@ -38,7 +38,7 @@ def ucast():
 
 @ucast.command()
 @click.argument("site")
-@click.option("--lag",  default=5.2,      help="Lag hour for weather forecast.")
+@click.option("--lag",  default=5.25,     help="Lag hour for weather forecast.")
 @click.option("--data", default='.',      help="Data archive directory.")
 @click.option("--link", default='.',      help="Directory contains links to the latest data.")
 @click.option("--plot", default='latest', help="File name of the plot; inside `link` if '/' is not in the name.")
@@ -98,10 +98,6 @@ def mkplot(sites, out):
 def mkbokeh(data,version):
     """ Creates a bokeh html file containing forecast of all sites."""
     bokeh_static(data,version)
- 
-    
-    
-    
 
 
 if __name__ == "__main__":
