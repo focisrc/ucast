@@ -38,17 +38,15 @@ def ucast():
 
 @ucast.command()
 @click.argument("site")
-@click.option("--lag",  default=5.25,     help="Lag hour for weather forecast.")
-@click.option("--data", default='.',      help="Data archive directory.")
-@click.option("--link", default='.',      help="Directory contains links to the latest data.")
-@click.option("--plot", default='latest', help="File name of the plot; inside `link` if '/' is not in the name.")
+@click.option("--lag",  default=5.25, help="Lag hour for weather forecast.")
+@click.option("--data", default='.',  help="Data archive directory.")
+@click.option("--link", default='.',  help="Directory contains links to the latest data.")
 def mktab(lag, site, data, link, plot):
     """Pull weather data for telescope SITE, process with `am`, and make tables"""
 
     site         = getattr(uc.site, site)
     latest_cycle = uc.gfs.latest_cycle(lag=lag)
 
-    dfs = []
     for hr_ago in range(0, 48+1, 6):
         cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
         outfile = path.join(data, cycle.strftime(dt_fmt))
@@ -67,20 +65,26 @@ def mktab(lag, site, data, link, plot):
                 "latest" if hr_ago == 0 else f"latest-{hr_ago:02d}")
             print(f'link as "{target}"')
             symlink(outfile, target)
-            dfs.append(read(target))
+
+
+@ucast.command()
+@click.argument("sites", nargs=-1)
+@click.option("--out", default='ucast', help="Output file name (no extension)")
+@click.option("--plot", default='latest', help="File name of the plot; inside `link` if '/' is not in the name.")
+def mkplot(sites, out, plot):
+    """Read weather tables from the directories SITES and create a summary plot"""
+
+    dfs = []
+    for hr_ago in range(0, 48+1, 6):
+        target = path.join(link,
+            "latest" if hr_ago == 0 else f"latest-{hr_ago:02d}")
+        dfs.append(read(target))
 
     if link is not None and plot is not None:
         title = f'{site.name}: ({site.lat}, {site.lon}, {site.alt}) from {latest_cycle}'
         if '/' not in plot:
             plot = path.join(link, plot)
         plot_latest(dfs, title, plot, color='k')
-
-
-@ucast.command()
-@click.argument("sites", nargs=-1)
-@click.option("--out", default='ucast', help="Output file name (no extension)")
-def mkplot(sites, out):
-    """Read weather tables from the directories SITES and create a summary plot"""
 
     if len(sites) == 0:
         sites = [p[:-7] for p in glob("*/latest")]
