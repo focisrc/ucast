@@ -41,3 +41,10 @@ def save_csv(file, df):
 
 def read_csv(file):
     return pd.read_csv(file)
+
+
+def save_tsv(file, df):
+    df.to_csv(file, index=False, sep='\t')
+
+def read_tsv(file):
+    return pd.read_csv(file, sep='\t')
