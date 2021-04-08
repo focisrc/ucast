@@ -40,11 +40,15 @@ def save_csv(fname, df):
     df.to_csv(fname, index=False)
 
 def read_csv(fname):
-    return pd.read_csv(fname)
+    d = pd.read_csv(fname)
+    d.date = pd.to_datetime(d.date, format=dt_fmt)
+    return d
 
 
 def save_tsv(fname, df):
     df.to_csv(fname, index=False, sep='\t')
 
 def read_tsv(fname):
-    return pd.read_csv(fname, sep='\t')
+    d = pd.read_csv(fname, sep='\t')
+    d.date = pd.to_datetime(d.date, format=dt_fmt)
+    return d
