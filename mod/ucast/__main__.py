@@ -126,7 +126,7 @@ def pall(sites, link, set, out):
 
     if len(sites) == 0:
         pattern = path.join(link, "*", set+'.tsv')
-        sites = [p.split(path.sep)[-2] for p in glob(pattern)]
+        sites = [p.split(path.sep)[-2] for p in sorted(glob(pattern))]
         if len(sites) == 0:
             print('Weather table not found.')
             return 0
@@ -156,7 +156,7 @@ def vis(sites, link, set, out):
 
     if len(sites) == 0:
         pattern = path.join(link, "*", set+'.tsv')
-        sites = [p.split(path.sep)[-2] for p in glob(pattern)]
+        sites = [p.split(path.sep)[-2] for p in sorted(glob(pattern))]
         if len(sites) == 0:
             print('Weather table not found.')
             return 0
