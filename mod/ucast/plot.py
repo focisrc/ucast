@@ -30,7 +30,7 @@ def plot_site(dfs, title=None, fname=None, **kwargs):
         alpha = 1.0 if i == 0 else (1 - i/len(dfs)) / 3
         width = 1.0 if i == 0 else 0.5
         for j, ax in enumerate(axes):
-            ax.plot(df.date, df.iloc[:,j+1],
+            ax.plot(df.date, df.iloc[:,j+1].fillna(0),
                     alpha=alpha, linewidth=width, **kwargs)
             ax.axvline(x=datetime.utcnow(), linestyle=':', color='k')
 
@@ -84,7 +84,8 @@ def plot_all(dfs, sites, title=None, fname=None, **kwargs):
         else:
             kwa = kwargs
         for j, ax in enumerate(axes):
-            ax.plot(df.date, df.iloc[:,j+1], label=sites[i], **kwargs)
+            ax.plot(df.date, df.iloc[:,j+1].fillna(0),
+                    label=sites[i], **kwargs)
             ax.axvline(x=datetime.utcnow(), linestyle=':', color='k')
 
     for j, ax in enumerate(axes):

@@ -23,8 +23,8 @@ def create_plot(var, dfs, colors, sites):
     elif var == "iwp":
         p2.y_range = Range1d(0, 2)
     for i in range(11):
-        p2.line(dfs[i]['date'], dfs[i][var], color=colors[i],
-                alpha=0.5, legend_label=sites[i])
+        p2.line(dfs[i]['date'], dfs[i][var].fillna(0),
+                color=colors[i], alpha=0.5, legend_label=sites[i])
     # Enable line hide toggle
     p2.legend.location = "top_left"
     p2.legend.click_policy = "hide"
