@@ -34,8 +34,9 @@ def create_plot(var, dfs, sites, **kwargs):
         p.y_range = Range1d(0, 2)
     for i, (df, c) in enumerate(zip(dfs, colors)):
         p.line(df['date'], df[var].fillna(0),
+               line_width=2,
                color=c, legend_label=sites[i],
-               alpha=1, muted_alpha=0.5)
+               alpha=0.75, muted_alpha=0.25)
     # Enable line hide toggle
     p.legend.location = "top_right"
     p.legend.click_policy = "mute"
