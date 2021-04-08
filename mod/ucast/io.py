@@ -25,26 +25,26 @@ out_fmt = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
 dt_fmt  = "%Y-%m-%d_%H.%M.%S"
 
 
-def save_txt(file, df):
-    with open(file, "w") as f:
+def save_txt(fname, df):
+    with open(fname, "w") as f:
         f.write(heading)
         np.savetxt(f, df.fillna(0).values, fmt=out_fmt)
 
-def read_txt(file):
-    d = pd.read_csv(file, delim_whitespace=True, skiprows=1, names=names)
+def read_txt(fname):
+    d = pd.read_csv(fname, delim_whitespace=True, skiprows=1, names=names)
     d.date = pd.to_datetime(d.date, format=dt_fmt)
     return d
 
 
-def save_csv(file, df):
-    df.to_csv(file, index=False)
+def save_csv(fname, df):
+    df.to_csv(fname, index=False)
 
-def read_csv(file):
-    return pd.read_csv(file)
+def read_csv(fname):
+    return pd.read_csv(fname)
 
 
-def save_tsv(file, df):
-    df.to_csv(file, index=False, sep='\t')
+def save_tsv(fname, df):
+    df.to_csv(fname, index=False, sep='\t')
 
-def read_tsv(file):
-    return pd.read_csv(file, sep='\t')
+def read_tsv(fname):
+    return pd.read_csv(fname, sep='\t')
