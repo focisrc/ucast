@@ -1,10 +1,12 @@
 from bokeh.models import Range1d, Column
 from bokeh.plotting import figure, output_file, show
 
-def bokeh_static(dfs, sites, fname):
-    colors = ['navy', 'red', 'blue', 'green', 'pink', 'purple',
-              'violet', 'darkcyan', 'royalblue', 'seagreen', 'gold']
+from bokeh.palettes import Category10_10 as palette
+import itertools
 
+colors = itertools.cycle(palette)
+
+def bokeh_static(dfs, sites, fname):
     output_file(fname+'.html')
 
     plots = []
@@ -13,11 +15,11 @@ def bokeh_static(dfs, sites, fname):
             kwargs = {}
         else:
             kwargs = {'x_range':plots[0].x_range}
-        plots.append(create_plot(var, dfs, colors, sites, **kwargs))
+        plots.append(create_plot(var, dfs, sites, **kwargs))
 
     show(Column(*plots))
 
-def create_plot(var, dfs, colors, sites, **kwargs):
+def create_plot(var, dfs, sites, **kwargs):
     p = figure(title=var, plot_width=1600, plot_height=500, x_axis_type="datetime",
                tools="pan,box_zoom,box_select,lasso_select,undo,wheel_zoom,redo,reset,save".split(),
                **kwargs)
@@ -29,9 +31,9 @@ def create_plot(var, dfs, colors, sites, **kwargs):
         p.y_range = Range1d(0, 2)
     elif var == "iwp":
         p.y_range = Range1d(0, 2)
-    for i, df in enumerate(dfs):
+    for i, (df, c) in enumerate(zip(dfs, colors)):
         p.line(df['date'], df[var].fillna(0),
-                color=colors[i], alpha=0.5, legend_label=sites[i])
+               color=c, alpha=0.5, legend_label=sites[i])
     # Enable line hide toggle
     p.legend.location = "top_left"
     p.legend.click_policy = "hide"
