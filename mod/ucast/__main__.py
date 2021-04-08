@@ -31,7 +31,7 @@ from ucast.io    import dt_fmt
 from ucast.io    import save_tsv as save
 from ucast.io    import read_tsv as read
 from ucast.plot  import plot_site, plot_all
-from ucast.bokehplot import bokeh_static
+from ucast.bokeh import static_vis
 
 
 @click.group()
@@ -166,7 +166,7 @@ def vis(sites, link, set, out, browser):
     sites = regroup(sites)
     dfs   = [read(f'{s}/{set}.tsv') for s in sites]
     sites = list(sites.values())
-    bokeh_static(dfs, sites, fname=out, browser=browser)
+    static_vis(dfs, sites, fname=out, browser=browser)
 
 
 if __name__ == "__main__":

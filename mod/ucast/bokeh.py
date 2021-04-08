@@ -1,12 +1,13 @@
 from bokeh.models import Range1d, Column
 from bokeh.plotting import figure, output_file, show, save
 
-from bokeh.palettes import Category10_10 as palette
+from bokeh.palettes import Category10_9 as palette
 import itertools
 
 colors = itertools.cycle(palette)
+tools  = "pan,box_zoom,wheel_zoom,box_select,undo,redo,reset,save".split()
 
-def bokeh_static(dfs, sites, fname, browser):
+def static_vis(dfs, sites, fname, browser):
     output_file(fname+'.html')
 
     plots = []
@@ -27,9 +28,11 @@ def bokeh_static(dfs, sites, fname, browser):
 
 def create_plot(var, dfs, sites, **kwargs):
     p = figure(title=var, x_axis_type="datetime",
-               plot_width=1600, plot_height=500 if var == "tau" else 300,
-               tools="pan,box_zoom,box_select,lasso_select,undo,wheel_zoom,redo,reset,save".split(),
+               plot_width=1600,
+               plot_height=500 if var == "tau" else 300,
+               tools=tools,
                **kwargs)
+
     if var == "tau":
         p.y_range = Range1d(0, 1)
     elif var == "pwv":
@@ -43,7 +46,8 @@ def create_plot(var, dfs, sites, **kwargs):
                line_width=2,
                color=c, legend_label=sites[i],
                alpha=0.75, muted_alpha=0.25)
-    # Enable line hide toggle
+
     p.legend.location = "top_right"
     p.legend.click_policy = "mute"
+
     return p
