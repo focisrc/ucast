@@ -25,7 +25,7 @@ import click
 import ucast as uc
 from ucast.utils import forced_symlink  as symlink
 from ucast.utils import ucast_dataframe as mkdf
-from ucast.utils import forecasts
+from ucast.utils import forecasts, valid
 from ucast.io    import dt_fmt, save, read
 from ucast.plot  import plot_latest, plot_sites
 from ucast.bokehplot import bokeh_static
@@ -40,9 +40,9 @@ def ucast():
 @click.argument("site")
 @click.option("--lag",  default=5.25, help="Lag hour for weather forecast.")
 @click.option("--data", default=None, help="Data archive directory.")
-@click.option("--link", default=None, help="Directory contains links to the latest data.")
+@click.option("--link", default=None, help="Directory with latest links.")
 def mktab(lag, site, data, link):
-    """Pull weather data for telescope SITE, process with `am`, and make tables"""
+    """Pull weather for telescope SITE, process with `am`, and make tables """
 
     if data is None:
         data = site if path.isdir(site) else '.'
@@ -57,7 +57,7 @@ def mktab(lag, site, data, link):
         cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
         outfile = path.join(data, cycle.strftime(dt_fmt))
 
-        if path.isfile(outfile) and len(open(outfile).readlines()) == len(forecasts)+1:
+        if valid(outfile):
             print(f'Skip "{outfile}"; ', end='')
         else:
             print(f'Creating "{outfile}" ...', end='')

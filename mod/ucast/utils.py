@@ -50,6 +50,13 @@ def ucast_dataframe(site, cycle):
     return df
 
 
+def valid(fname):
+    if path.isfile(fname):
+        with open(fname) as f:
+            return len(f.readlines()) == len(forecasts)+1
+    return False
+
+
 def forced_symlink(src, dst):
     r   = randrange(1000000)
     tmp = f"{dst}-tmp{r:06d}"
