@@ -29,8 +29,8 @@ def create_plot(var, dfs, colors, sites, **kwargs):
         p.y_range = Range1d(0, 2)
     elif var == "iwp":
         p.y_range = Range1d(0, 2)
-    for i in range(11):
-        p.line(dfs[i]['date'], dfs[i][var].fillna(0),
+    for i, df in enumerate(dfs):
+        p.line(df['date'], df[var].fillna(0),
                 color=colors[i], alpha=0.5, legend_label=sites[i])
     # Enable line hide toggle
     p.legend.location = "top_left"

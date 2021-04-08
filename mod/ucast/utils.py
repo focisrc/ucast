@@ -19,6 +19,7 @@
 from random   import randrange
 from os       import symlink, rename, path
 from datetime import timedelta
+from math     import sqrt
 
 import requests
 import pandas as pd
@@ -62,3 +63,26 @@ def forced_symlink(src, dst):
     tmp = f"{dst}-tmp{r:06d}"
     symlink(path.relpath(src, path.dirname(tmp)), tmp)
     rename(tmp, dst)
+
+
+def regroup(sites):
+
+    def d(s1, s2):
+        dlat = s1.lat - s2.lat
+        dlon = s1.lon - s2.lon
+        return sqrt(dlat * dlat + dlon * dlon)
+
+    ss = [getattr(uc.site, s) for s in sites]
+
+    m = {}
+    for i, curr in enumerate(ss):
+        added = False
+        for prev in ss[:i]:
+            if d(curr, prev) < 0.1:
+                added = True
+                m[prev.name] = ','.join((m[prev.name], curr.name))
+                break
+        if not added:
+            m[curr.name] = curr.name
+
+    return m

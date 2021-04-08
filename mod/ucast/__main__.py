@@ -26,7 +26,7 @@ import click
 import ucast as uc
 from ucast.utils import forced_symlink  as symlink
 from ucast.utils import ucast_dataframe as mkdf
-from ucast.utils import forecasts, valid
+from ucast.utils import forecasts, valid, regroup
 from ucast.io    import dt_fmt
 from ucast.io    import save_tsv as save
 from ucast.io    import read_tsv as read
@@ -161,7 +161,9 @@ def vis(sites, link, set, out):
             print('Weather table not found.')
             return 0
 
-    dfs = [read(f'{s}/{set}.tsv') for s in sites]
+    sites = regroup(sites)
+    dfs   = [read(f'{s}/{set}.tsv') for s in sites]
+    sites = list(sites.values())
     bokeh_static(dfs, sites, fname=out)
 
 
