@@ -131,11 +131,18 @@ def pall(sites, link, out):
 
 
 @ucast.command()
-@click.option("--data", default='.',      help="Data archive directory.")
-@click.option("--version",default="latest", help="version of dataset. Eg : latest, latest-06...")
-def mkbokeh(data,version):
+@click.option("--link",  default=None, help="Directory with latest links.")
+@click.option("--input", default=None, help="Input dataset, e.g. latest, latest-06, ...")
+def vis(link, input):
     """ Creates a bokeh html file containing forecast of all sites."""
-    bokeh_static(data,version)
+
+    if link is None:
+        link = '.'
+
+    if input is None:
+        input = 'latest.tsv'
+
+    bokeh_static(link, input)
 
 
 if __name__ == "__main__":

@@ -24,7 +24,7 @@ def bokeh_static(data, version):
 
 def set_dates(dfs):
     for df in dfs:
-        df['date'] = pd.to_datetime(df['date'], format='%Y%m%d_%H:%M:%S')
+        df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d_%H.%M.%S')
 
 def create_plot(var, dfs, colors, sites):
     p2 = figure(title=var, plot_width=1600, plot_height=500, x_axis_type="datetime",
