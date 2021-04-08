@@ -39,10 +39,16 @@ def ucast():
 @ucast.command()
 @click.argument("site")
 @click.option("--lag",  default=5.25, help="Lag hour for weather forecast.")
-@click.option("--data", default='.',  help="Data archive directory.")
-@click.option("--link", default='.',  help="Directory contains links to the latest data.")
-def mktab(lag, site, data, link, plot):
+@click.option("--data", default=None, help="Data archive directory.")
+@click.option("--link", default=None, help="Directory contains links to the latest data.")
+def mktab(lag, site, data, link):
     """Pull weather data for telescope SITE, process with `am`, and make tables"""
+
+    if data is None:
+        data = site if path.isdir(site) else '.'
+
+    if link is None:
+        link = data
 
     site         = getattr(uc.site, site)
     latest_cycle = uc.gfs.latest_cycle(lag=lag)
