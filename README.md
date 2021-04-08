@@ -23,12 +23,13 @@ python.
 pull GFS data, create summary tables of atmospheric properties, and
 plot the results:
 
-    $ ucast mktab  KP --data KP --link KP # create summary table
-    $ ucast mkplot                        # create summary plot
-    $ ucast mkbokeh --data . --version latest # Create bokeh plot
+    $ ucast mktab KP # create weather forecast table
+    $ ucast psite KP # create summary plot for one site
+    $ ucast pall     # create summary plot for all sites
+    $ ucast vis      # create a bokeh visualization
 
-Use `ucast mktab --help` or `ucast mkplot --help` to see the detailed
-usages.
+Use `ucast mktab --help`, `ucast psite --help`, etc to see the
+detailed usages.
 
 
 ## Backend Tools
