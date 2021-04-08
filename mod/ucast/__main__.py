@@ -140,7 +140,9 @@ def pall(sites, link, set, out):
 @click.option("--link", default=None, help="Directory with latest links.")
 @click.option("--set",  default=None, help="Input dataset, e.g. latest, latest-06, ...")
 @click.option("--out",  default=None, help="File name of the plot.")
-def vis(sites, link, set, out):
+@click.option('--browser/--no-browser',
+                        default=True, help="Open visualization in a browser.")
+def vis(sites, link, set, out, browser):
     """ Creates a bokeh html file containing forecast of all sites."""
 
     if link is None:
@@ -164,7 +166,7 @@ def vis(sites, link, set, out):
     sites = regroup(sites)
     dfs   = [read(f'{s}/{set}.tsv') for s in sites]
     sites = list(sites.values())
-    bokeh_static(dfs, sites, fname=out)
+    bokeh_static(dfs, sites, fname=out, browser=browser)
 
 
 if __name__ == "__main__":

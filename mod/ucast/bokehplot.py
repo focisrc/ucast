@@ -1,12 +1,12 @@
 from bokeh.models import Range1d, Column
-from bokeh.plotting import figure, output_file, show
+from bokeh.plotting import figure, output_file, show, save
 
 from bokeh.palettes import Category10_10 as palette
 import itertools
 
 colors = itertools.cycle(palette)
 
-def bokeh_static(dfs, sites, fname):
+def bokeh_static(dfs, sites, fname, browser):
     output_file(fname+'.html')
 
     plots = []
@@ -17,7 +17,13 @@ def bokeh_static(dfs, sites, fname):
             kwargs = {'x_range':plots[0].x_range}
         plots.append(create_plot(var, dfs, sites, **kwargs))
 
-    show(Column(*plots))
+    c = Column(*plots)
+    if browser:
+        show(c)
+    else:
+        print(f'Save dashboard to "{fname}.html"')
+        save(c)
+
 
 def create_plot(var, dfs, sites, **kwargs):
     p = figure(title=var, x_axis_type="datetime",
