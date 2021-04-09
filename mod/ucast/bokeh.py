@@ -6,12 +6,13 @@ import itertools
 
 colors = itertools.cycle(palette)
 tools  = "pan,box_zoom,wheel_zoom,box_select,undo,redo,reset,save".split()
+vars   = "tau,pwv,lwp,iwp".split()
 
 def static_vis(dfs, sites, fname, browser):
     output_file(fname+'.html')
 
     plots = []
-    for var in "tau,pwv,lwp,iwp".split(","):
+    for var in vars:
         if len(plots) == 0:
             kwargs = {}
         else:
