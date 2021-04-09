@@ -28,24 +28,28 @@ from tqdm import tqdm
 import ucast  as uc
 from ucast.io import dt_fmt
 
-columns   = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
-forecasts = list(range(120+1)) + list(range(123, 384+1, 3))
-
+columns      = ['date', 'tau', 'Tb', 'pwv', 'lwp', 'iwp', 'o3']
+forecast_hrs = list(range(120+1)) + list(range(123, 384+1, 3))
 
 am = uc.am.AM()
 
 
-def ucast_dataframe(site, cycle):
+def ucast_dataframe(site, cycle, test=False):
     df = pd.DataFrame(columns=columns)
 
-    for hr_forecast in tqdm(forecasts, desc=cycle.strftime(dt_fmt)):
+    if test:
+        forecasts = range(2)
+    else:
+        forecasts = tqdm(forecast_hrs, desc=cycle.strftime(dt_fmt))
+
+    for hr in forecasts:
         try:
-            gfs = uc.gfs.GFS(site, cycle, hr_forecast)
+            gfs = uc.gfs.GFS(site, cycle, hr)
         except requests.exceptions.RetryError as e:
             continue # skip a row
 
         sol  = am.solve(gfs)
-        date = (gfs.cycle + timedelta(hours=hr_forecast)).strftime(dt_fmt)
+        date = (gfs.cycle + timedelta(hours=hr)).strftime(dt_fmt)
         df   = df.append({'date':date, **sol}, ignore_index=True)
 
     return df
@@ -54,7 +58,7 @@ def ucast_dataframe(site, cycle):
 def valid(fname):
     if path.isfile(fname):
         with open(fname) as f:
-            return len(f.readlines()) == len(forecasts)+1
+            return len(f.readlines()) == len(forecast_hrs)+1
     return False
 
 

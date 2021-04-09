@@ -26,7 +26,7 @@ import click
 import ucast as uc
 from ucast.utils import forced_symlink  as symlink
 from ucast.utils import ucast_dataframe as mkdf
-from ucast.utils import forecasts, valid, regroup
+from ucast.utils import valid, regroup
 from ucast.io    import dt_fmt
 from ucast.io    import save_tsv as save
 from ucast.io    import read_tsv as read
@@ -44,8 +44,9 @@ def ucast():
 @click.option("--lag",     default=5.25,  help="Lag hour for weather forecast.")
 @click.option("--data",    default=None,  help="Data archive directory.")
 @click.option("--link",    default=None,  help="Directory with latest links.")
-@click.option("--no-link", default=False, help="Disable latest links.", is_flag=True)
-def mktab(lag, site, data, link, no_link):
+@click.option("--no-link", default=False, help="Disable latest links.",               is_flag=True)
+@click.option("--test",    default=False, help="Pull two forecasts for fast testing", is_flag=True)
+def mktab(lag, site, data, link, no_link, test):
     """Pull weather for telescope SITE, process with `am`, and make tables """
 
     if no_link and link is not None:
@@ -69,7 +70,7 @@ def mktab(lag, site, data, link, no_link):
             print(f'Skip "{outfile}"', end='')
         else:
             print(f'Creating "{outfile}" ...', end='')
-            save(outfile, mkdf(site, cycle))
+            save(outfile, mkdf(site, cycle, test))
             print(" DONE", end='')
 
         if no_link:
