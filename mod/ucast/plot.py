@@ -27,7 +27,7 @@ vars = ['tau', 'pwv', 'lwp', 'iwp']
 
 def plot_site(dfs, title=None, fname=None, **kwargs):
 
-    fig, axes = plt.subplots(len(vars), 1, figsize=(12,12), sharex=True)
+    fig, axes = plt.subplots(len(vars), 1, figsize=(12,8), sharex=True)
 
     for i, df in enumerate(dfs):
         alpha = 1.0 if i == 0 else (1 - i/len(dfs)) / 3
@@ -44,10 +44,10 @@ def plot_site(dfs, title=None, fname=None, **kwargs):
         ax.xaxis.set_major_locator(mdates.DayLocator())
         ax.autoscale(enable=True, axis='x', tight=True)
 
-    axes[0].set_ylabel(r'$\tau_{255}$',      fontsize=16)
-    axes[1].set_ylabel(r'pwv [mm]',          fontsize=16)
-    axes[2].set_ylabel(r'lwp [kg m$^{-2}$]', fontsize=16)
-    axes[3].set_ylabel(r'iwp [kg m$^{-2}$]', fontsize=16)
+    axes[0].set_ylabel(r'$\tau_{255}$')
+    axes[1].set_ylabel(r'pwv [mm]')
+    axes[2].set_ylabel(r'lwp [kg m$^{-2}$]')
+    axes[3].set_ylabel(r'iwp [kg m$^{-2}$]')
 
     axes[0].set_ylim(0, 1.1)
     axes[1].set_ylim(0, 16.5)
@@ -55,9 +55,9 @@ def plot_site(dfs, title=None, fname=None, **kwargs):
     axes[3].set_ylim(0, 2.2)
 
     if title is not None:
-        axes[0].set_title(title, fontsize=16)
+        axes[0].set_title(title)
 
-    axes[3].set_xlabel('Date', fontsize=16)
+    axes[3].set_xlabel('Date')
     axes[3].set_xlim(dfs[-1].date[0], None)
     plt.xticks(rotation=45, ha='right')
 
@@ -75,7 +75,7 @@ def plot_site(dfs, title=None, fname=None, **kwargs):
 
 def plot_all(dfs, sites, title=None, fname=None, **kwargs):
 
-    fig, axes = plt.subplots(len(vars), 1, figsize=(12,12), sharex=True)
+    fig, axes = plt.subplots(len(vars), 1, figsize=(12,8), sharex=True)
 
     for i, df in enumerate(dfs):
         if i == 0:
@@ -94,10 +94,10 @@ def plot_all(dfs, sites, title=None, fname=None, **kwargs):
         ax.xaxis.set_major_locator(mdates.DayLocator())
         ax.autoscale(enable=True, axis='x', tight=True)
 
-    axes[0].set_ylabel(r'$\tau_{255}$',      fontsize=16)
-    axes[1].set_ylabel(r'pwv [mm]',          fontsize=16)
-    axes[2].set_ylabel(r'lwp [kg m$^{-2}$]', fontsize=16)
-    axes[3].set_ylabel(r'iwp [kg m$^{-2}$]', fontsize=16)
+    axes[0].set_ylabel(r'$\tau_{255}$')
+    axes[1].set_ylabel(r'pwv [mm]')
+    axes[2].set_ylabel(r'lwp [kg m$^{-2}$]')
+    axes[3].set_ylabel(r'iwp [kg m$^{-2}$]')
 
     axes[0].set_ylim(0, 1.1)
     axes[1].set_ylim(0, 16.5)
@@ -105,11 +105,11 @@ def plot_all(dfs, sites, title=None, fname=None, **kwargs):
     axes[3].set_ylim(0, 2.2)
 
     if title is not None:
-        axes[0].set_title(title, fontsize=16)
+        axes[0].set_title(title)
 
-    axes[3].legend(loc='upper right')
+    axes[3].legend(loc='upper right', bbox_to_anchor=(0.99,2))
 
-    axes[3].set_xlabel('Date', fontsize=16)
+    axes[3].set_xlabel('Date')
     axes[3].set_xlim(dfs[-1].date[0], None)
     plt.xticks(rotation=45, ha='right')
 
