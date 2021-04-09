@@ -147,7 +147,7 @@ def psite(site, link, out):
             "latest.tsv" if hr_ago == 0 else f"latest-{hr_ago:02d}.tsv")
         dfs.append(read(target))
 
-    title = f'{site.name}: ({site.lat},{site.lon},{site.alt})@{latest_cycle}'
+    title = f'{site.name} ({site.lat},{site.lon},{site.alt}) forecasted from {latest_cycle}'
     plot_site(dfs, title, fname=out, color='k')
 
 
@@ -177,10 +177,14 @@ def pall(sites, link, set, out):
             print('Weather table not found.')
             return 0
 
+    latest_fname = path.basename(path.realpath(path.join(link, f"{sites[0]}/{set}.tsv")))
+    latest_cycle = datetime.strptime(path.splitext(latest_fname)[0], dt_fmt)
+    title = f'Full array forecasted from {latest_cycle}'
+
     sites = regroup(sites)
     dfs   = [read(f'{s}/{set}.tsv') for s in sites]
     sites = list(sites.values())
-    plot_all(dfs, sites, fname=out)
+    plot_all(dfs, sites, title, fname=out)
 
 
 @ucast.command()
