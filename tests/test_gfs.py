@@ -24,3 +24,10 @@ def test_nomads():
 
     url = uc.gfs.nomads.data_url(site, latest_cycle, None, 0.25)
     assert url is not None
+
+def test_gfs():
+    site         = uc.site.KP
+    latest_cycle = uc.gfs.latest_cycle()
+
+    gfs = uc.gfs.GFS(site, latest_cycle, 0)
+    assert gfs is not None
