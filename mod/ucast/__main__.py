@@ -177,7 +177,9 @@ def pall(sites, link, set, out):
             print('Weather table not found.')
             return 0
 
-    dfs = [read(f'{s}/{set}.tsv') for s in sites]
+    sites = regroup(sites)
+    dfs   = [read(f'{s}/{set}.tsv') for s in sites]
+    sites = list(sites.values())
     plot_all(dfs, sites, fname=out)
 
 
