@@ -1,4 +1,5 @@
 [![Actions Status](https://github.com/focisrc/ucast/workflows/python-package/badge.svg)](https://github.com/focisrc/ucast/actions)
+[![PyPI version](https://badge.fury.io/py/ucast.svg)](https://badge.fury.io/py/ucast)
 
 # µcast
 
