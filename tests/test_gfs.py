@@ -18,6 +18,9 @@
 
 import ucast as uc
 
-def test_gfs_cycle():
+def test_nomads():
+    site         = uc.site.KP
     latest_cycle = uc.gfs.latest_cycle()
-    assert latest_cycle is not None
+
+    url = uc.gfs.nomads.data_url(site, latest_cycle, None, 0.25)
+    assert url is not None
