@@ -57,9 +57,14 @@ T0 2.7 K
         return subprocess.run([self.am, *args], **kwargs)
 
     def solve(self, gfs):
-        cfg = self.header + config(gfs)
+        layers, Tb, RHb = config(gfs)
+
+        cfg = self.header + layers
         res = self.run('-', input=cfg, encoding='utf-8', capture_output=True)
-        sol = {}
+        sol = {
+            'Ts' : Tb [-1] - 273.15,
+            'RHs': RHb[-1],
+        }
 
         l = res.stdout.split()
         sol['tau'] = float(l[1])

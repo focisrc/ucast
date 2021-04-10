@@ -110,9 +110,10 @@ def config(gfs, debug=False):
     n = np.argmax(gfs.z < z)
     u = (gfs.z[n-1]-z) / (gfs.z[n-1]-gfs.z[n])
 
-    Pb = base(gfs.P, n, u, log=True)
-    zb = base(gfs.z, n, u)
-    Tb = base(gfs.T, n, u)
+    Pb  = base(gfs.P,  n, u, log=True)
+    zb  = base(gfs.z,  n, u)
+    Tb  = base(gfs.T,  n, u)
+    RHb = base(gfs.RH, n, u)
 
     # For mixing ratios and RH, use averages over the two levels
     # bounding the layer.
@@ -168,4 +169,4 @@ def config(gfs, debug=False):
             Pb[i], zb[i], Tb[i],
             T[i], o3_vmr[i], RH[i], ctw[i], cti[i]))
 
-    return "\n\n".join(l)
+    return "\n\n".join(l), Tb, RHb

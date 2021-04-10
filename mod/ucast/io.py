@@ -19,9 +19,10 @@
 import numpy  as np
 import pandas as pd
 
-names   = [             'date',    'tau',       'Tb',      'pwv',  'lwp',       'iwp',             'o3']
-heading = "#            date       tau225        Tb[K]      pwv[mm] lwp[kg*m^-2] iwp[kg*m^-2]       o3[DU]\n"
-out_fmt = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
+names   = [            'date',    'tau',        'Tb',      'pwv',  'lwp',       'iwp',             'o3',         'Ts',       'RHs'    ]
+heading = "#            date       tau225        Tb[K]      pwv[mm] lwp[kg*m^-2] iwp[kg*m^-2]       o3[DU]        Ts[C]       RHs[%]\n"
+
+out_fmt = "%16s %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e %12.4e"
 dt_fmt  = "%Y-%m-%d_%H.%M.%S"
 
 
