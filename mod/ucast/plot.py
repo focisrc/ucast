@@ -22,8 +22,9 @@ from os.path  import splitext
 from matplotlib import pyplot as plt
 from matplotlib import dates  as mdates
 
-vars = ['tau', 'pwv', 'lwp', 'iwp']
-
+vars   = [   'tau',        'Ts',      'RHs',    'pwv',       'lwp',                'iwp'              ]
+labels = [r'$\tau_{255}$', 'T [°C]',  'RH [%]', 'pwv [mm]', r'lwp [kg m$^{-2}$]', r'iwp [kg m$^{-2}$]']
+ylims  = [   (0, 1.1),     (-55, 22), (0, 110), (0, 16.5),   (0, 2.2),             (0., 2.2)          ]
 
 def plot_site(dfs, title=None, fname=None, **kwargs):
 
@@ -33,8 +34,11 @@ def plot_site(dfs, title=None, fname=None, **kwargs):
         alpha = 1.0 if i == 0 else (1 - i/len(dfs)) / 3
         width = 1.0 if i == 0 else 0.5
         for j, ax in enumerate(axes):
-            ax.plot(df.date, df[vars[j]].fillna(0),
-                    alpha=alpha, linewidth=width, **kwargs)
+            try:
+                ax.plot(df.date, df[vars[j]].fillna(0),
+                        alpha=alpha, linewidth=width, **kwargs)
+            except:
+                pass
             ax.axvline(x=datetime.utcnow(), linestyle=':', color='k')
 
     for j, ax in enumerate(axes):
@@ -43,22 +47,14 @@ def plot_site(dfs, title=None, fname=None, **kwargs):
         ax.tick_params(axis='y',direction="in",right=True)
         ax.xaxis.set_major_locator(mdates.DayLocator())
         ax.autoscale(enable=True, axis='x', tight=True)
-
-    axes[0].set_ylabel(r'$\tau_{255}$')
-    axes[1].set_ylabel(r'pwv [mm]')
-    axes[2].set_ylabel(r'lwp [kg m$^{-2}$]')
-    axes[3].set_ylabel(r'iwp [kg m$^{-2}$]')
-
-    axes[0].set_ylim(0, 1.1)
-    axes[1].set_ylim(0, 16.5)
-    axes[2].set_ylim(0, 2.2)
-    axes[3].set_ylim(0, 2.2)
+        ax.set_ylabel(labels[j])
+        ax.set_ylim(*ylims[j])
 
     if title is not None:
         axes[0].set_title(title)
 
-    axes[3].set_xlabel('Date')
-    axes[3].set_xlim(dfs[-1].date[0], None)
+    axes[5].set_xlabel('Date')
+    axes[5].set_xlim(dfs[-1].date[0], None)
     plt.xticks(rotation=45, ha='right')
 
     fig.tight_layout()
@@ -83,8 +79,11 @@ def plot_all(dfs, sites, title=None, fname=None, **kwargs):
         else:
             kwa = kwargs
         for j, ax in enumerate(axes):
-            ax.plot(df.date, df[vars[j]].fillna(0),
-                    label=sites[i], **kwargs)
+            try:
+                ax.plot(df.date, df[vars[j]].fillna(0),
+                        label=sites[i], **kwargs)
+            except:
+                pass
             ax.axvline(x=datetime.utcnow(), linestyle=':', color='k')
 
     for j, ax in enumerate(axes):
@@ -93,24 +92,16 @@ def plot_all(dfs, sites, title=None, fname=None, **kwargs):
         ax.tick_params(axis='y',direction="in",right=True)
         ax.xaxis.set_major_locator(mdates.DayLocator())
         ax.autoscale(enable=True, axis='x', tight=True)
-
-    axes[0].set_ylabel(r'$\tau_{255}$')
-    axes[1].set_ylabel(r'pwv [mm]')
-    axes[2].set_ylabel(r'lwp [kg m$^{-2}$]')
-    axes[3].set_ylabel(r'iwp [kg m$^{-2}$]')
-
-    axes[0].set_ylim(0, 1.1)
-    axes[1].set_ylim(0, 16.5)
-    axes[2].set_ylim(0, 2.2)
-    axes[3].set_ylim(0, 2.2)
+        ax.set_ylabel(labels[j])
+        ax.set_ylim(*ylims[j])
 
     if title is not None:
         axes[0].set_title(title)
 
-    axes[3].legend(loc='upper right', bbox_to_anchor=(0.99,2))
+    axes[5].legend(loc='upper right', bbox_to_anchor=(0.99,2))
 
-    axes[3].set_xlabel('Date')
-    axes[3].set_xlim(dfs[-1].date[0], None)
+    axes[5].set_xlabel('Date')
+    axes[5].set_xlim(dfs[-1].date[0], None)
     plt.xticks(rotation=45, ha='right')
 
     fig.tight_layout()
