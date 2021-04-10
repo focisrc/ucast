@@ -5,8 +5,8 @@ from bokeh.palettes import Category10_9 as palette
 import itertools
 
 colors = itertools.cycle(palette)
-tools  = "pan,box_zoom,wheel_zoom,box_select,undo,redo,reset,save".split()
-vars   = "tau,pwv,lwp,iwp".split()
+tools  = "pan,box_zoom,wheel_zoom,box_select,undo,redo,reset,save".split(',')
+vars   = "tau,pwv,lwp,iwp".split(',')
 
 def static_vis(dfs, sites, fname, browser):
     output_file(fname+'.html')
