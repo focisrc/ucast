@@ -44,10 +44,13 @@ def request(url,
             r = requests.get(url, timeout=(ctime, rtime))
             if r.status_code == requests.codes.ok:
                 return r
-        except requests.exceptions.ConnectTimeout:
+        except (requests.exceptions.ConnectTimeout,
+                requests.exceptions.ConnectionError):
             err("Connection timed out.")
         except requests.exceptions.ReadTimeout:
             err("Data download timed out.")
+        except requests.exceptions.RequestException as e:
+            err("Unexpected exception of", str(e)+".")
         else:
             err(f"Download failed with status code {r.status_code}.")
 
