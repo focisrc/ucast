@@ -21,9 +21,10 @@ import time
 import requests
 
 # Timeouts and retries
-CONN_TIMEOUT        = 6   # Initial server response timeout in seconds
-READ_TIMEOUT        = 18  # Stalled download timeout in seconds
-RETRY_DELAY         = 60  # Delay before retry (NOAA requests 60 s)
+CONN_TIMEOUT        = 6    # Initial server response timeout in seconds
+READ_TIMEOUT        = 18   # Stalled download timeout in seconds
+RETRY_DELAY         = 60   # Delay before retry (NOAA requests 60 s)
+NODATA_DELAY        = 300  # Delay after a 404
 MAX_DOWNLOAD_TRIES  = 5
 
 def errln(s):
@@ -44,15 +45,18 @@ def request(url,
             r = requests.get(url, timeout=(ctime, rtime))
             if r.status_code == requests.codes.ok:
                 return r
-        except (requests.exceptions.ConnectTimeout,
-                requests.exceptions.ConnectionError):
+            elif r.status_code == 404:
+                err("Data not available (404).")
+                time.sleep(NODATA_DELAY - delay)
+            elif r.status_code in {403, 429, 500, 502, 503, 504}:
+                err(f"Received retryable status {r.status_code}.")
+                retry += 0.8
+            else:
+                err(f"Download failed with status code {r.status_code}.")
+        except requests.exceptions.ConnectTimeout:
             err("Connection timed out.")
         except requests.exceptions.ReadTimeout:
             err("Data download timed out.")
-        except requests.exceptions.RequestException as e:
-            err("Unexpected exception of", str(e)+".")
-        else:
-            err(f"Download failed with status code {r.status_code}.")
 
         if retry:
             errln("  Retrying...")
