@@ -22,7 +22,7 @@ Site = namedtuple('Site', ['name', 'lat', 'lon', 'alt'])
 
 ALMA = Site('ALMA', -23.029,  -67.755, 5070.4)
 APEX = Site('APEX', -23.006,  -67.759, 5104.5)
-GLT  = Site('GLT',   72.579,  -38.454, 3204.9)
+GLT  = Site('GLT',   76.5312, -68.7039,  76.5)
 JCMT = Site('JCMT',  19.823, -155.477, 4120.1)
 KP   = Site('KP',    31.956, -111.612, 1902.0)
 LMT  = Site('LMT',   18.985,  -97.315, 4600.0)
