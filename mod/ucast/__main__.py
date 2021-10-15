@@ -38,6 +38,60 @@ from ucast.bokeh import static_vis
 def ucast():
     """µcast: micro-weather forecasting for astronomy"""
 
+@ucast.command()
+@click.argument("site")
+@click.option("--lag",     default=5.25,  help="Lag hour for weather forecast.")
+@click.option("--data",    default=None,  help="Data archive directory.")
+@click.option("--link",    default=None,  help="Directory with latest links.")
+@click.option("--no-link", default=False, help="Disable latest links.",               is_flag=True)
+@click.option("--test",    default=False, help="Pull two forecasts for fast testing", is_flag=True)
+@click.option("--stencil_size",    default=1,  help="distance of stencil point from site")
+@click.option("--all_directions",    default=True, help="Creates default", is_flag=True)
+@click.option("--direction",    default=None, help="direction ofindividual stencil point")
+def mkgrid(lag, site, data, link, no_link, test,stencil_size,all_directions,direction):
+    """Pull weather for telescope SITE, process with `am`, and make tables """
+
+    if no_link and link is not None:
+        raise click.UsageError(
+            '"--link" should not be specified if "--no-link" is set')
+
+    if data is None:
+        data = site if path.isdir(site) else '.'
+
+    if link is None:
+        link = data
+    if direction!=None:
+        all_directions=False
+    
+    
+    main_site         = getattr(uc.site, site)
+    if all_directions:
+        stencil_sites = uc.site.get_sites([main_site],stencil_size=stencil_size)
+        print(stencil_sites)
+    for site in stencil_sites:
+        print("site is:",site)
+        print(type(site))
+        latest_cycle = uc.gfs.latest_cycle(lag=lag)
+
+        for hr_ago in range(0, 48+1, 6):
+            cycle   = uc.gfs.relative_cycle(latest_cycle, hr_ago)
+            outfile = path.join(data, cycle.strftime(dt_fmt)+'.tsv')
+
+            if valid(outfile):
+                print(f'Skip "{outfile}"', end='')
+            else:
+                print(f'Creating "{outfile}" ...', end='')
+                save(outfile, mkdf(site, cycle, test))
+                print(" DONE", end='')
+
+            if no_link:
+                print()
+            else:
+                target = path.join(link,
+                    "latest.tsv" if hr_ago == 0 else f"latest-{hr_ago:02d}.tsv")
+                print(f'; linked as "{target}"')
+                symlink(outfile, target)
+        
 
 @ucast.command()
 @click.argument("site")
