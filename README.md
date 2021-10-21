@@ -25,6 +25,7 @@ pull GFS data, create summary tables of atmospheric properties, and
 plot the results:
 
     $ ucast mktab KP # create weather forecast table
+    $ ucast mkgrid KP # create weather forecast table grid/stencil
     $ ucast psite KP # create summary plot for one site
     $ ucast pall     # create summary plot for all sites
     $ ucast vis      # create a bokeh visualization
