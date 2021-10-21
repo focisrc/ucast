@@ -66,7 +66,10 @@ def mkgrid(lag, site, data, link, no_link, test,stencil_size,all_directions,dire
     
     main_site         = getattr(uc.site, site)
     if all_directions:
-        stencil_sites = uc.site.get_sites([main_site],stencil_size=stencil_size)
+        stencil_sites=[]
+        #change range(1 to range(0 for origin
+        for i in range(1,stencil_size+1):
+            stencil_sites.extend(uc.site.get_sites([main_site],stencil_size=stencil_size))
         print(stencil_sites)
     for site in stencil_sites:
         print("site is:",site)
