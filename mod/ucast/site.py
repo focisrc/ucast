@@ -17,6 +17,12 @@
 # along with `ucast`.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import namedtuple
+import requests
+import urllib
+import pandas as pd
+
+import gc
+from math import floor
 
 Site = namedtuple('Site', ['name', 'lat', 'lon', 'alt'])
 
@@ -31,3 +37,38 @@ PV   = Site('PV',    37.066,   -3.393, 2921.7)
 SMA  = Site('SMA',   19.822, -155.476, 4110.3)
 SMT  = Site('SMT',   32.702, -109.891, 3158.7)
 SPT  = Site('SPT',  -90.000,   45.000, 2857.4)
+
+
+# USGS Elevation Point Query Service
+url = r'https://nationalmap.gov/epqs/pqs.php?'
+def elevation_function(lat,lon):
+    """Query service using lat, lon. add the elevation values as a new column."""
+    lat=[lat]
+    lon=[lon]
+    for lat, lon in zip(lat,lon):
+        # define rest query params
+        params = {
+            'output': 'json',
+            'x': lon,
+            'y': lat,
+            'units': 'Meters'
+        }
+        # format query string and return query value
+        result = requests.get((url + urllib.parse.urlencode(params)))
+        return float(result.json()['USGS_Elevation_Point_Query_Service']['Elevation_Query']['Elevation'])
+
+
+
+
+def get_sites(sites,stencil_size,grid_size=0.25):
+    stencil_sites=[]
+    for site in sites:
+        stencil_sites.append(Site(f"{site.name}_{stencil_size}_E", site.lat,site.lon+0.25*stencil_size,elevation_function(site.lat,site.lon+0.25*stencil_size)))
+        stencil_sites.append(Site(f"{site.name}_{stencil_size}_W", site.lat,site.lon-0.25*stencil_size,elevation_function(site.lat,site.lon-0.25*stencil_size)))
+        stencil_sites.append(Site(f"{site.name}_{stencil_size}_S", site.lat-0.25*stencil_size,site.lon,elevation_function(site.lat-0.25*stencil_size,site.lon)))
+        stencil_sites.append(Site(f"{site.name}_{stencil_size}_N",site.lat+0.25*stencil_size,site.lon,elevation_function(site.lat+0.25*stencil_size,site.lon)))
+        stencil_sites.append(Site(f"{site.name}_{stencil_size}_SW",site.lat-0.25*stencil_size,site.lon-0.25*stencil_size,elevation_function(site.lat-0.25*stencil_size,site.lon+0.25*stencil_size)))
+        stencil_sites.append(Site(f"{site.name}_{stencil_size}_SE",site.lat-0.25*stencil_size,site.lon+0.25*stencil_size,elevation_function(site.lat+0.25*stencil_size,site.lon+0.25*stencil_size)))
+        stencil_sites.append(Site(f"{site.name}_{stencil_size}_NW",site.lat+0.25*stencil_size,site.lon-0.25*stencil_size,elevation_function(site.lat-0.25*stencil_size,site.lon+0.25*stencil_size)))
+        stencil_sites.append(Site(f"{site.name}_{stencil_size}_NE",site.lat+0.25*stencil_size,site.lon+0.25*stencil_size,elevation_function(site.lat+0.25*stencil_size,site.lon-0.25*stencil_size)))
+    return stencil_sites
